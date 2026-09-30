@@ -696,11 +696,11 @@ function rendre(){
     <p class="encore" id="encore"${toutesRet?"":" hidden"}>Et il m'en reste des milliers.</p>
   </section>
 
-  <section>
+  ${(S.voeu||"").trim() ? `<section>
     <p class="eyebrow">Un vœu</p>
     <h2>Attrape l'étoile filante</h2>
     <div class="ciel-voeu" id="ciel-voeu">${voeuAttrape ? voeuHtml() : `<button class="filante" id="filante" aria-label="Attraper l'étoile filante"><i></i></button><p class="voeu-aide">Touche-la au passage. Elle garde un vœu pour toi.</p>`}</div>
-  </section>
+  </section>` : ""}
 
   <section>
     <p class="eyebrow">Une lettre</p>
@@ -708,12 +708,12 @@ function rendre(){
     ${lettre}
   </section>
 
-  <section>
+  ${(S.secret||"").trim() ? `<section>
     <p class="eyebrow">Un secret</p>
     <h2>Gratte pour découvrir</h2>
     <div class="ticket" id="ticket"><span class="ticket-lab">Ticket n° ${String(new Date(S.date).getDate()||14).padStart(2,"0")}${String((new Date(S.date).getMonth()+1)||2).padStart(2,"0")} · valable pour toujours</span><p class="secret-txt">${esc(S.secret)}</p>${gratte ? "" : `<canvas id="grattage" aria-label="Zone à gratter"></canvas>`}</div>
     <p class="astuce" id="astuce-g">${gratte ? "" : "Gratte avec ton doigt."}</p>
-  </section>
+  </section>` : ""}
 
   <section class="question">
     <p class="eyebrow">Une dernière chose</p>
@@ -1394,7 +1394,7 @@ corps.addEventListener("click", e=>{
   }
 });
 
-$("#btn-edit").onclick = ()=>{ ed.classList.add("ouvert"); toutReveler(); if (compteDebut === null) compteDebut = -1e9; rendre(); };
+$("#btn-edit").onclick = ()=>{ if (!brouillonCharge){ brouillonCharge = true; try { const d = localStorage.getItem("constellation-brouillon-v2"); if (d){ S = {...clone(EXEMPLE), ...JSON.parse(d)}; construireEditeur(); } } catch(e){} } ed.classList.add("ouvert"); toutReveler(); if (compteDebut === null) compteDebut = -1e9; rendre(); };
 $("#fermer-edit").onclick = ()=>{ ed.classList.remove("ouvert"); };
 $("#voir-ouv").onclick = ()=>{ ed.classList.remove("ouvert"); ouverture(); };
 
@@ -1423,7 +1423,9 @@ function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("vu"); 
 
 /* ================= Démarrage ================= */
 const idCadeau = (location.hash.match(/^#([a-z0-9-]{3,60})$/) || [])[1];
-try { const b = localStorage.getItem("constellation-brouillon-v2"); if (b) S = {...clone(EXEMPLE), ...JSON.parse(b)}; } catch(e){}
+// La vitrine montre toujours l'exemple ; le brouillon ne revient qu'en ouvrant l'éditeur
+let brouillonCharge = false;
+addEventListener("hashchange", () => location.reload());
 if (idCadeau){
   // Le destinataire ne doit pas voir l'exemple : on masque tout pendant le chargement
   document.body.classList.add("cadeau");
