@@ -357,6 +357,9 @@ body.amb-aube .fond::after{background:none}
 .ed-pied .second{display:flex;gap:8px}
 .ed-pied .second button{flex:1;background:none;border:1px solid #ddd0d5;border-radius:99px;padding:10px;font-size:.85rem;color:#4a3644}
 .note{font-size:.78rem;color:#86667a;line-height:1.45;margin:4px 0 0}
+.lien-btn{flex:1;display:flex;align-items:center;justify-content:center;border:1px solid #ddd0d5;border-radius:99px;padding:10px;font-size:.85rem;color:#4a3644;text-decoration:none;font-weight:700}
+#f-code{text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+#gen-lien:disabled{opacity:.6}
 #lien-sortie{width:100%;font-size:.75rem;padding:8px;border:1px solid #ddd0d5;border-radius:6px;background:#fff;color:#2a1d28}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#2a1d28;color:#fff;padding:10px 18px;border-radius:99px;font-size:.88rem;z-index:60;opacity:0;transition:.3s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
 .toast.vu{opacity:1;transform:translateX(-50%)}
@@ -428,11 +431,13 @@ body.cadeau .ouvrir-edit{display:none}
   <div class="ed-tete"><h2>Votre site</h2><button id="fermer-edit" aria-label="Fermer">×</button></div>
   <div class="ed-corps" id="ed-corps"></div>
   <div class="ed-pied">
-    <button class="principal" id="gen-lien">Terminer ma commande</button>
+    <div class="champ" style="margin:0"><label for="f-code">Votre code d'accès (reçu après paiement)</label><input id="f-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+    <button class="principal" id="gen-lien">Créer mon site</button>
+    <p class="note" id="etat-creation" role="status"></p>
     <div id="commande" hidden>
-      <p class="note"><strong>Dernière étape :</strong> copiez ce code et envoyez-le avec vos photos (dans l'ordre) à la personne qui vous a vendu le site. Vous recevrez votre lien cadeau.</p>
-      <textarea id="lien-sortie" readonly rows="4" aria-label="Code de commande"></textarea>
-      <button class="principal" id="copier-code" style="margin-top:6px">Copier le code</button>
+      <p class="note"><strong>C'est prêt !</strong> Voici le lien à offrir. Gardez-le précieusement.</p>
+      <input id="lien-sortie" readonly aria-label="Lien du site">
+      <div class="second"><button id="copier-code">Copier le lien</button><a id="voir-site" class="lien-btn" target="_blank" rel="noopener">Voir le site</a></div>
     </div>
     <div class="second">
       <button id="voir-ouv">Voir l'ouverture</button>
@@ -505,6 +510,35 @@ function sauver(){
   catch(e){
     try { localStorage.setItem("constellation-brouillon-v2", JSON.stringify({...S, photos:S.photos.map(p=>({src:"",legende:p.legende}))})); } catch(e2){}
   }
+}
+
+/* ================= Connexion Supabase ================= */
+const SUPA_URL = "https://ejirggnjxfygjenqfcqn.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqaXJnZ25qeGZ5Z2plbnFmY3FuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDI5MTIsImV4cCI6MjEwNjAxODkxMn0.GO2TJ6PNqx3la5ebJga9BBARR7mXs1IyDJY0JUrqh8k";
+const supaOK = () => /^https:\/\//.test(SUPA_URL) && SUPA_KEY.length > 40;
+const entetes = extra => Object.assign({apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY}, extra || {});
+async function rpc(nom, corps){
+  const r = await fetch(`${SUPA_URL}/rest/v1/rpc/${nom}`, {method:"POST", headers: entetes({"Content-Type":"application/json"}), body: JSON.stringify(corps)});
+  const t = await r.text();
+  if (!r.ok) throw new Error(t || String(r.status));
+  return t ? JSON.parse(t) : null;
+}
+function dataUrlVersBlob(u){
+  const [tete, b64] = u.split(","); const type = (tete.match(/data:([^;]+)/) || [])[1] || "image/jpeg";
+  const bin = atob(b64); const a = new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) a[i] = bin.charCodeAt(i);
+  return new Blob([a], {type});
+}
+async function envoyerPhoto(dataUrl, chemin){
+  const r = await fetch(`${SUPA_URL}/storage/v1/object/photos-cadeaux/${chemin}`, {method:"POST", headers: entetes({"Content-Type":"image/jpeg","x-upsert":"false"}), body: dataUrlVersBlob(dataUrl)});
+  if (!r.ok) throw new Error(await r.text());
+  return `${SUPA_URL}/storage/v1/object/public/photos-cadeaux/${chemin}`;
+}
+async function chargerCadeau(id){
+  if (supaOK()){ try { const d = await rpc("lire_cadeau", {p_id: id}); if (d) return d; } catch(e){} }
+  const r = await fetch("cadeaux/" + id + ".json", {cache:"no-store"});
+  if (!r.ok) throw new Error("introuvable");
+  return r.json();
 }
 
 /* ================= Rendu du site ================= */
@@ -1406,16 +1440,43 @@ $("#reinit").onclick = ()=>{
   souvActif = 0; construireEditeur(); rendre(); sauver(); toast("Site vidé. À vous d'écrire.");
 };
 
-$("#gen-lien").onclick = ()=>{
-  const c = codeCommande();
-  $("#lien-sortie").value = c.texte;
-  $("#commande").hidden = false;
-  $("#gen-lien").hidden = true;
+$("#gen-lien").onclick = async ()=>{
+  const etat = $("#etat-creation"), btn = $("#gen-lien");
+  const code = $("#f-code").value.trim().toUpperCase();
+  if (!supaOK()){ etat.textContent = "La création en ligne n'est pas encore activée sur ce site."; return; }
+  if (!code){ etat.textContent = "Entrez le code d'accès reçu après votre paiement."; $("#f-code").focus(); return; }
+  btn.disabled = true;
+  try {
+    etat.textContent = "Vérification du code…";
+    const valable = await rpc("verifier_code", {p_code: code});
+    if (!valable){ etat.textContent = "Ce code n'existe pas ou a déjà servi. Vérifiez-le, ou contactez la personne qui vous l'a donné."; return; }
+    const aEnvoyer = S.photos.filter(p => p.src && p.src.startsWith("data:")).length;
+    const data = clone(S); data.photos = []; let n = 0;
+    for (const p of S.photos){
+      if (p.src && p.src.startsWith("data:")){
+        n++; etat.textContent = `Envoi des photos… ${n} sur ${aEnvoyer}`;
+        const nom = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,10) + ".jpg";
+        data.photos.push({src: await envoyerPhoto(p.src, code + "/" + nom), legende: p.legende});
+      } else {
+        data.photos.push({src: p.src && /^https:/.test(p.src) ? p.src : "", legende: p.legende});
+      }
+    }
+    etat.textContent = "Création de votre site…";
+    const id = await rpc("creer_cadeau", {p_code: code, p_data: data});
+    const lien = location.href.split("#")[0] + "#" + id;
+    $("#lien-sortie").value = lien; $("#voir-site").href = lien;
+    $("#commande").hidden = false; btn.hidden = true; etat.textContent = "";
+    try { localStorage.setItem("constellation-dernier-lien", lien); } catch(e){}
+    pluieDeCoeurs(.6);
+  } catch(e){
+    const m = String(e && e.message || "");
+    etat.textContent = /code_invalide/.test(m) ? "Ce code vient déjà d'être utilisé." : "La création n'a pas marché. Vérifiez votre connexion internet et réessayez. Si ça bloque encore, contactez la personne qui vous a donné le code.";
+  } finally { btn.disabled = false; }
 };
 $("#copier-code").onclick = async ()=>{
   const out = $("#lien-sortie");
-  try { await navigator.clipboard.writeText(out.value); toast("Code copié. Envoyez-le avec vos photos."); }
-  catch(e){ out.focus(); out.select(); toast("Code sélectionné, copiez-le"); }
+  try { await navigator.clipboard.writeText(out.value); toast("Lien copié. Offrez-le !"); }
+  catch(e){ out.focus(); out.select(); toast("Lien sélectionné, copiez-le"); }
 };
 
 let tToast;
@@ -1430,8 +1491,7 @@ if (idCadeau){
   // Le destinataire ne doit pas voir l'exemple : on masque tout pendant le chargement
   document.body.classList.add("cadeau");
   const o = $("#ouverture"); intro.attente();
-  fetch("cadeaux/" + idCadeau + ".json", {cache:"no-store"})
-    .then(r => { if (!r.ok) throw 0; return r.json(); })
+  chargerCadeau(idCadeau)
     .then(d => { S = {...clone(EXEMPLE), ...d}; modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
     .catch(() => {
       document.body.classList.remove("cadeau"); o.hidden = true; lancerCompte();
