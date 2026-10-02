@@ -9,6 +9,10 @@
 <meta property="og:title" content="Notre Constellation, le site cadeau pour votre couple">
 <meta property="og:description" content="Vos souvenirs, vos photos, vos mots et des jeux à découvrir. Créez-le vous-même et offrez-le avec un simple lien.">
 <meta property="og:url" content="https://reypiveteau-crypto.github.io/notre-histoire/">
+<meta property="og:image" content="https://reypiveteau-crypto.github.io/notre-histoire/apercu.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Karla:wght@400;500;700&family=Mrs+Saint+Delafield&display=swap">
@@ -617,6 +621,16 @@ body.cadeau .infos-btn{display:none}
 .infos-contact{color:var(--muted);font-size:.92rem;line-height:1.5;margin:0}
 .infos-go{display:block;width:100%;margin-top:24px;border:0;border-radius:99px;padding:15px;font-weight:700;font-size:1.02rem;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);text-align:center;text-decoration:none;box-shadow:0 10px 30px var(--glow)}
 .infos-carte a.infos-go{color:var(--on-rose)}
+
+/* Panneau « Personnaliser » : une seule colonne qui défile, la création du site à la fin */
+#editeur{overflow-y:auto;overscroll-behavior:contain}
+.ed-tete{position:sticky;top:0;z-index:3;background:#faf6f3;flex-shrink:0}
+.ed-corps{overflow:visible;flex:none}
+.ed-pied{max-height:none;overflow:visible;flex-shrink:0;background:#f3e9ec;border-top:0;padding-top:20px;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.ed-pied-titre{font-size:1.25rem;margin:0 0 2px;color:#2a1d28}
+.ed-aller{position:sticky;bottom:0;z-index:3;flex-shrink:0;margin-top:auto;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,#faf6f3 70%,rgba(250,246,243,0))}
+.ed-aller button{width:100%;background:#b0405f;color:#fff;border:0;border-radius:99px;padding:13px;font-weight:700;box-shadow:0 8px 22px rgba(176,64,95,.3)}
+.ed-aller[hidden]{display:none}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -698,7 +712,7 @@ body.cadeau .infos-btn{display:none}
     <details><summary>Combien de temps faut-il pour le créer ?</summary><p>Comptez quelques minutes pour une version simple. Vous pouvez prendre votre temps : votre brouillon reste enregistré sur votre appareil tant que vous n'avez pas créé le site.</p></details>
     <details><summary>Le paiement est-il sécurisé ?</summary><p>Oui. Le paiement se fait sur la page de Stripe, un prestataire de paiement utilisé par des millions de boutiques. Nous ne voyons jamais votre numéro de carte.</p></details>
     <details><summary>Puis-je essayer avant d'acheter ?</summary><p>Oui. Cliquez sur « Personnaliser » : vous pouvez tout remplir et voir le résultat gratuitement. Le code sert seulement à obtenir le lien à offrir.</p></details>
-    <details><summary>Puis-je modifier le site après l'avoir créé ?</summary><p>Non : un code crée un seul site, et il ne peut plus être modifié ensuite. Relisez bien et vérifiez l'aperçu avant de cliquer sur « Créer mon site ».</p></details>
+    <details><summary>Puis-je modifier le site après l'avoir créé ?</summary><p>Oui. Ouvrez « Personnaliser », puis « Site déjà créé ? Le modifier » et entrez votre code. Vous corrigez, vous enregistrez, et le lien reste le même.</p></details>
     <details><summary>Qui peut voir mon site ?</summary><p>Seulement les personnes qui ont le lien. Il n'apparaît dans aucune liste publique. Attention : toute personne à qui le lien est transmis peut l'ouvrir.</p></details>
     <details><summary>Le lien reste-t-il valable longtemps ?</summary><p>Le lien n'a pas de date d'expiration : il reste accessible tant que le service existe.</p></details>
     <details><summary>J'ai perdu mon code, que faire ?</summary><p>Ouvrez « Personnaliser », puis « Code perdu ? » et indiquez l'email utilisé lors du paiement.</p></details>
@@ -740,7 +754,8 @@ body.cadeau .infos-btn{display:none}
 <aside id="editeur" aria-label="Personnaliser le site">
   <div class="ed-tete"><h2>Votre site</h2><button id="fermer-edit" aria-label="Fermer">×</button></div>
   <div class="ed-corps" id="ed-corps"></div>
-  <div class="ed-pied">
+  <div class="ed-pied" id="ed-pied">
+    <h3 class="ed-pied-titre">Créer et offrir votre site</h3>
     <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (l'offre de lancement se termine bientôt, le prix passera à 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
     <div class="champ" style="margin:0"><label for="f-code">Votre code d'accès (reçu après paiement)</label><input id="f-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
     <button class="principal" id="gen-lien">Créer mon site</button>
@@ -749,6 +764,12 @@ body.cadeau .infos-btn{display:none}
       <div class="champ"><label for="perdu-email">L'email utilisé pour le paiement</label><input id="perdu-email" type="email" autocomplete="email" placeholder="vous@exemple.fr"></div>
       <button class="principal" id="perdu-go">Retrouver mon code</button>
       <div class="note" id="perdu-res" role="status"></div>
+    </details>
+    <details class="avis-form" id="modif-form">
+      <summary>Site déjà créé ? Le modifier</summary>
+      <div class="champ"><label for="modif-code">Le code utilisé pour créer votre site</label><input id="modif-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+      <button class="principal" id="modif-go">Charger mon site</button>
+      <div class="note" id="modif-res" role="status"></div>
     </details>
     <p class="note" id="etat-creation" role="status"></p>
     <div id="commande" hidden>
@@ -770,6 +791,7 @@ body.cadeau .infos-btn{display:none}
     </details>
     <p class="note" id="reinit-conf" hidden>Cliquez encore sur « Tout effacer » pour confirmer.</p>
   </div>
+  <div class="ed-aller" id="ed-aller"><button type="button" id="ed-aller-btn">J'ai fini : créer mon site</button></div>
 </aside>
 
 <div class="toast" id="toast" role="status"></div>
@@ -2217,16 +2239,38 @@ $("#reinit").onclick = ()=>{
   souvActif = 0; construireEditeur(); rendre(); sauver(); toast("Site vidé. À vous d'écrire.");
 };
 
+$("#ed-aller-btn").onclick = () => { $("#ed-pied").scrollIntoView({behavior: reduit ? "auto" : "smooth", block: "start"}); };
+if ("IntersectionObserver" in window) new IntersectionObserver(es => { $("#ed-aller").hidden = es[0].isIntersecting; }, {root: $("#editeur"), threshold: .05}).observe($("#ed-pied"));
+let modifCode = "";
+function passerEnModif(code){ modifCode = code; $("#gen-lien").textContent = "Enregistrer mes modifications"; $("#f-code").value = code; }
+$("#modif-go").onclick = async () => {
+  const res = $("#modif-res"), code = $("#modif-code").value.trim().toUpperCase();
+  if (!code){ res.textContent = "Entrez le code que vous avez utilisé pour créer votre site."; $("#modif-code").focus(); return; }
+  res.textContent = "Chargement de votre site…";
+  try {
+    const rep = await rpc("ouvrir_cadeau", {p_code: code});
+    if (!rep || !rep.data){ res.textContent = "Aucun site n'a été créé avec ce code. Vérifiez-le : s'il n'a pas encore servi, utilisez « Créer mon site »."; return; }
+    const d = rep.data;
+    S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; });
+    delete S.id; brouillonCharge = true; souvActif = 0; construireEditeur(); rendre(); sauver();
+    passerEnModif(code); $("#commande").hidden = true; $("#gen-lien").hidden = false; $("#etat-creation").textContent = "";
+    res.textContent = "Votre site est chargé. Faites vos changements, puis cliquez sur « Enregistrer mes modifications ». Le lien restera le même.";
+  } catch(e){ res.textContent = "Le chargement n'a pas marché. Vérifiez votre connexion et réessayez."; }
+};
 $("#gen-lien").onclick = async ()=>{
   const etat = $("#etat-creation"), btn = $("#gen-lien");
   const code = $("#f-code").value.trim().toUpperCase();
+  const enModif = !!modifCode && modifCode === code;
   if (!supaOK()){ etat.textContent = "La création en ligne n'est pas encore activée sur ce site."; return; }
   if (!code){ etat.textContent = "Entrez le code d'accès reçu après votre paiement."; $("#f-code").focus(); return; }
   btn.disabled = true;
   try {
     etat.textContent = "Vérification du code…";
-    const valable = await rpc("verifier_code", {p_code: code});
-    if (!valable){ etat.textContent = "Ce code n'existe pas ou a déjà servi. Vérifiez-le, ou contactez la personne qui vous l'a donné."; return; }
+    const valable = enModif || await rpc("verifier_code", {p_code: code});
+    if (!valable){
+      let existe = null; try { existe = await rpc("ouvrir_cadeau", {p_code: code}); } catch(e){}
+      if (existe && existe.id){ $("#modif-form").open = true; $("#modif-code").value = code; etat.textContent = "Ce code a déjà créé un site. Pour le corriger, utilisez « Site déjà créé ? Le modifier » juste au-dessus."; return; }
+      etat.textContent = "Ce code n'existe pas ou a déjà servi. Vérifiez-le, ou contactez la personne qui vous l'a donné."; return; }
     const aEnvoyer = S.photos.filter(p => p.src && p.src.startsWith("data:")).length;
     const data = clone(S); data.photos = []; let n = 0;
     for (const p of S.photos){
@@ -2238,8 +2282,11 @@ $("#gen-lien").onclick = async ()=>{
         data.photos.push({src: p.src && /^https:/.test(p.src) ? p.src : "", legende: p.legende});
       }
     }
-    etat.textContent = "Création de votre site…";
-    const id = await rpc("creer_cadeau", {p_code: code, p_data: data});
+    delete data.id;
+    etat.textContent = enModif ? "Enregistrement de vos modifications…" : "Création de votre site…";
+    const id = await rpc(enModif ? "modifier_cadeau" : "creer_cadeau", {p_code: code, p_data: data});
+    S.photos = data.photos.map(p => ({src: p.src, legende: p.legende})); sauver();
+    if (enModif) toast("Modifications enregistrées"); else passerEnModif(code);
     const lien = location.href.split("#")[0] + "#" + id;
     $("#lien-sortie").value = lien; $("#voir-site").href = lien;
     $("#commande").hidden = false; btn.hidden = true; etat.textContent = "";
