@@ -455,6 +455,7 @@ body:not(.cadeau):not(.chapitres) main{padding-bottom:180px}
 .puzzle-cadre.victoire::after{content:"";position:absolute;inset:-6px;border-radius:4px;box-shadow:0 0 0 0 var(--gold);animation:halo 1.4s .5s ease-out}
 @keyframes halo{0%{box-shadow:0 0 0 0 var(--gold);opacity:1}100%{box-shadow:0 0 0 40px var(--gold);opacity:0}}
 
+
 #coeurs{position:fixed;inset:0;width:100%;height:100%;z-index:40;pointer-events:none}
 
 /* ---------- Éditeur ---------- */
@@ -518,6 +519,20 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
 }
+
+/* Bouton d'achat : « Offrir ce site 14,99 € » + fin de l'offre de lancement */
+.acheter{max-width:340px;border-radius:20px}
+.acheter .ce-site{display:inline}
+.acheter .lancement{font-size:.72rem;line-height:1.45;font-weight:500;letter-spacing:.01em}
+.acheter .chrono{font-size:1em;font-weight:700}
+@media (max-width:480px){
+  .acheter{left:16px;right:16px;max-width:none;border-radius:18px;justify-content:center;text-align:center;padding:12px 16px;font-size:1rem}
+  .acheter .ce-site{display:inline}
+  .ouvrir-edit{bottom:calc(116px + env(safe-area-inset-bottom,0px))}
+  .toast{bottom:calc(170px + env(safe-area-inset-bottom,0px))}
+  body:not(.cadeau).chapitres #site > section.actif{padding-bottom:calc(200px + env(safe-area-inset-bottom,0px))}
+}
+
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -564,7 +579,7 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
 
 <button class="rejouer" id="rejouer" aria-label="Rejouer l'ouverture">✦ Rejouer l'ouverture</button>
 
-<a class="acheter" id="acheter" href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">Offre de lancement</small></a>
+<a class="acheter" id="acheter" href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
 <button class="ouvrir-edit" id="btn-edit" aria-controls="editeur">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
   Personnaliser
@@ -574,7 +589,7 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
   <div class="ed-tete"><h2>Votre site</h2><button id="fermer-edit" aria-label="Fermer">×</button></div>
   <div class="ed-corps" id="ed-corps"></div>
   <div class="ed-pied">
-    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (offre de lancement, bientôt 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
+    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (l'offre de lancement se termine bientôt, le prix passera à 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
     <div class="champ" style="margin:0"><label for="f-code">Votre code d'accès (reçu après paiement)</label><input id="f-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
     <button class="principal" id="gen-lien">Créer mon site</button>
     <p class="note" id="etat-creation" role="status"></p>
@@ -676,7 +691,7 @@ function majLancement(){
     if (cpt) cpt.hidden = true; if (noteL) noteL.hidden = true;
     return;
   }
-  if (cpt) cpt.innerHTML = `Offre de lancement<br>Bientôt <span class="chrono">${PRIX_NORMAL}</span>`;
+  if (cpt) cpt.innerHTML = `L'offre de lancement se termine bientôt<br>Le prix passera à <span class="chrono">${PRIX_NORMAL}</span>`;
 }
 setInterval(majLancement, 60000);
 
