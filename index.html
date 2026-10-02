@@ -380,6 +380,81 @@ body:not(.chapitres) .points{display:none}
 body:not(.cadeau).chapitres #site > section.actif{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 body:not(.cadeau):not(.chapitres) main{padding-bottom:180px}
 
+/* ================= Nouveaux jeux ================= */
+.puzzle{--img:none;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:min(420px,100%);aspect-ratio:1;margin:28px auto 0;padding:8px;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.35);transition:gap .8s,padding .8s,box-shadow .8s}
+.tuile{border:0;padding:0;border-radius:6px;background-image:var(--img);background-size:300% 300%;background-color:var(--ink-3);transition:transform .25s,box-shadow .25s,border-radius .8s;animation:tuileIn .35s ease-out}
+@keyframes tuileIn{from{transform:scale(.92);opacity:.6}}
+.tuile.sel{transform:scale(.92);box-shadow:0 0 0 3px var(--gold),0 0 24px var(--glow);z-index:1}
+.puzzle.fini{gap:0;padding:0;box-shadow:0 0 70px -6px var(--glow),0 20px 50px rgba(0,0,0,.35);overflow:hidden}
+.puzzle.fini .tuile{border-radius:0;animation:none}
+#puzzle-zone .encore,#quiz-zone .encore{text-align:center}
+#puzzle-zone .astuce,#roue-zone .astuce,#coffre-zone .astuce{text-align:center}
+.quiz-jauge{display:flex;justify-content:center;gap:10px;margin:26px 0 18px;font-size:1.5rem;color:var(--line)}
+.quiz-jauge .plein{color:var(--rose);filter:drop-shadow(0 0 8px var(--glow));animation:allume .6s ease-out}
+.quiz-carte,.quiz-fin{max-width:520px;margin:0 auto;background:var(--ink-2);border:1px solid var(--line);border-radius:14px;padding:26px 22px;text-align:center;animation:monte .5s ease-out}
+.quiz-num{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.quiz-q{font-family:var(--f-display);font-size:clamp(1.25rem,4vw,1.6rem);line-height:1.3;margin:.5em 0 1em;text-wrap:balance}
+.quiz-rep{display:flex;flex-direction:column;gap:10px}
+.quiz-rep button{border:1px solid var(--line);background:var(--ink-3);color:var(--text);border-radius:99px;padding:13px 18px;font-size:1rem;font-weight:500;transition:background .25s,transform .2s,border-color .25s,opacity .25s}
+.quiz-rep button:not(:disabled):hover{border-color:var(--rose)}
+.quiz-rep button.juste{background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);border-color:transparent;transform:scale(1.04);opacity:1}
+.quiz-rep button.faux{animation:secoue .4s;opacity:.4;text-decoration:line-through}
+@keyframes secoue{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+.quiz-msg{min-height:1.4em;margin:14px 0 0;color:var(--muted);font-size:.92rem}
+.quiz-score{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:0}
+.roue-cadre{position:relative;width:min(330px,82vw);aspect-ratio:1;margin:30px auto 0}
+#roue-cv{width:100%;height:100%;border-radius:50%;box-shadow:0 0 60px -8px var(--glow),0 20px 40px rgba(0,0,0,.35)}
+.roue-fleche{position:absolute;left:50%;top:-10px;width:30px;height:34px;margin-left:-15px;background:var(--gold);clip-path:polygon(50% 100%,0 0,100% 0);z-index:2;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))}
+.roue-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:86px;height:86px;border-radius:50%;border:4px solid var(--gold);background:var(--ink);color:var(--text);font-weight:700;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 6px 20px rgba(0,0,0,.4);z-index:2}
+.roue-btn:not(:disabled){animation:appelSuite 2.4s ease-in-out infinite}
+.bons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px;max-width:560px;margin:18px auto 0}
+.bon{position:relative;display:flex;flex-direction:column;gap:4px;padding:14px 22px;background:#fbf7f2;color:#2b1d28;border-radius:8px;border:1px dashed #c2456b;text-align:center;
+  -webkit-mask:radial-gradient(circle 9px at 0 50%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 9px at 100% 50%,transparent 98%,#000) right/51% 100% no-repeat;
+  mask:radial-gradient(circle 9px at 0 50%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 9px at 100% 50%,transparent 98%,#000) right/51% 100% no-repeat}
+.bon.nouveau{animation:bonIn .8s cubic-bezier(.3,1.5,.4,1)}
+@keyframes bonIn{from{transform:scale(.4) rotate(-8deg);opacity:0}}
+.bon-lab{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.bon .bon-lab{color:#c2456b}
+.bon-txt{font-family:var(--f-display);font-size:1.12rem;line-height:1.25}
+.cadenas{width:120px;margin:26px auto 0}
+.cadenas svg{display:block;width:100%;overflow:visible;filter:drop-shadow(0 14px 24px rgba(0,0,0,.4))}
+.cadenas .anse{transition:transform .7s cubic-bezier(.3,1.5,.4,1);transform-origin:86px 74px;transform-box:view-box}
+.cadenas.ouvert .anse{transform:translateY(-16px) rotate(24deg)}
+.molettes{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:22px}
+.molette{display:flex;flex-direction:column;align-items:center;background:var(--ink-2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.molette b{font-family:var(--f-display);font-size:2.2rem;font-weight:500;width:56px;text-align:center;line-height:1.3;font-variant-numeric:tabular-nums}
+.molette b.tic{animation:tic .25s ease-out}
+@keyframes tic{from{transform:translateY(8px);opacity:.3}}
+.molette button{width:56px;height:38px;border:0;background:var(--ink-3);position:relative}
+.molette button::before{content:"";position:absolute;left:50%;top:50%;border:7px solid transparent;transform:translate(-50%,-70%);border-bottom-color:var(--rose)}
+.molette button.bas::before{transform:translate(-50%,-30%);border-bottom-color:transparent;border-top-color:var(--rose)}
+.molette-sep{font-family:var(--f-display);font-size:2rem;color:var(--gold);margin-inline:2px}
+.coffre-tresor{max-width:520px;margin:22px auto 0;background:var(--ink-2);border:1px solid var(--gold);border-radius:14px;padding:24px 22px;text-align:center;box-shadow:0 0 60px -10px var(--glow);animation:monte .8s ease-out}
+.coffre-tresor p{font-family:var(--f-display);font-size:clamp(1.15rem,3.6vw,1.45rem);line-height:1.4;margin:.5em 0 0}
+.acheter .chrono{font-size:1.15em}
+
+/* Puzzle : cadre photo, repères et victoire */
+.puzzle-cadre{position:relative;width:min(420px,100%);margin:28px auto 0;background:#fbf7f2;padding:12px 12px 14px;box-shadow:0 22px 50px rgba(0,0,0,.4);transform:rotate(-1.2deg);transition:transform .8s cubic-bezier(.3,1.4,.4,1),box-shadow .8s}
+.puzzle-cadre .puzzle{width:100%;margin:0;padding:0;background:#e9dfd8;border:0;border-radius:2px;box-shadow:none;gap:4px}
+.puzzle-cadre .tuile{border-radius:3px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 2px 6px rgba(0,0,0,.25)}
+.puzzle-cadre .tuile.ok{box-shadow:inset 0 0 0 2px var(--gold),0 0 14px -2px var(--gold)}
+.puzzle-cadre .tuile.sel{box-shadow:0 0 0 3px #c2456b,0 10px 24px rgba(0,0,0,.4);transform:scale(.9) rotate(-3deg)}
+.puzzle-leg{font-family:var(--f-script);font-size:clamp(1.9rem,7vw,2.6rem);color:#2b1d28;text-align:center;margin:0;line-height:1;max-height:0;opacity:0;overflow:hidden;transition:max-height .8s,opacity .8s .3s,margin .8s}
+.puzzle-cadre.fini .puzzle-leg{max-height:70px;opacity:1;margin-top:10px}
+.puzzle-cadre.fini{transform:rotate(1.2deg);box-shadow:0 0 80px -6px var(--glow),0 26px 60px rgba(0,0,0,.45)}
+.puzzle-cadre.fini .puzzle{gap:0;background:none;overflow:hidden}
+.puzzle-cadre.fini .tuile{border-radius:0;box-shadow:none;animation:none}
+.puzzle-eclat{position:absolute;inset:12px 12px auto 12px;aspect-ratio:1;pointer-events:none;overflow:hidden;border-radius:2px}
+.puzzle-eclat::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);transform:translateX(-120%)}
+.puzzle-cadre.victoire{animation:cadreVictoire 1.6s cubic-bezier(.3,1.4,.4,1)}
+@keyframes cadreVictoire{0%{transform:rotate(-1.2deg) scale(1)}30%{transform:rotate(-3deg) scale(1.09)}60%{transform:rotate(3deg) scale(1.05)}100%{transform:rotate(1.2deg) scale(1)}}
+.puzzle-cadre.victoire .tuile{animation:tuileVictoire .9s cubic-bezier(.3,1.5,.4,1) both;animation-delay:calc(var(--d) * 60ms)}
+@keyframes tuileVictoire{0%{transform:rotateY(0) scale(1)}45%{transform:rotateY(180deg) scale(1.12);filter:brightness(1.6)}100%{transform:rotateY(360deg) scale(1)}}
+.puzzle-cadre.victoire .puzzle-eclat::before{animation:balayage 1.2s .8s ease-out}
+@keyframes balayage{to{transform:translateX(120%)}}
+.puzzle-cadre.victoire::after{content:"";position:absolute;inset:-6px;border-radius:4px;box-shadow:0 0 0 0 var(--gold);animation:halo 1.4s .5s ease-out}
+@keyframes halo{0%{box-shadow:0 0 0 0 var(--gold);opacity:1}100%{box-shadow:0 0 0 40px var(--gold);opacity:0}}
+
 #coeurs{position:fixed;inset:0;width:100%;height:100%;z-index:40;pointer-events:none}
 
 /* ---------- Éditeur ---------- */
@@ -489,7 +564,7 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
 
 <button class="rejouer" id="rejouer" aria-label="Rejouer l'ouverture">✦ Rejouer l'ouverture</button>
 
-<a class="acheter" id="acheter" href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">Prix de lancement</small></a>
+<a class="acheter" id="acheter" href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">Offre de lancement</small></a>
 <button class="ouvrir-edit" id="btn-edit" aria-controls="editeur">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
   Personnaliser
@@ -499,7 +574,7 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
   <div class="ed-tete"><h2>Votre site</h2><button id="fermer-edit" aria-label="Fermer">×</button></div>
   <div class="ed-corps" id="ed-corps"></div>
   <div class="ed-pied">
-    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (prix de lancement, puis 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
+    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (offre de lancement, bientôt 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
     <div class="champ" style="margin:0"><label for="f-code">Votre code d'accès (reçu après paiement)</label><input id="f-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
     <button class="principal" id="gen-lien">Créer mon site</button>
     <p class="note" id="etat-creation" role="status"></p>
@@ -552,6 +627,13 @@ const EXEMPLE = {
   lettre: "Mon amour,\n\nJe ne suis pas très doué pour les mots, alors j'ai construit un ciel entier pour te les dire.\n\nChaque étoile que tu viens de voir, c'est un moment où je suis tombé un peu plus amoureux de toi. Et je sais qu'il en reste des milliers à allumer.\n\nMerci d'être toi. Merci d'être là.",
   voeu: "Que chaque année avec toi ressemble à celle-ci, en encore mieux.",
   secret: "Samedi, 19h. Mets ta plus belle tenue : j'ai réservé une surprise.",
+  quiz: [
+    {q:"Où a eu lieu notre tout premier rendez-vous ?", r:["Dans un café","Au cinéma","À la plage"], ok:0},
+    {q:"Qu'est-ce qu'on a raté trois fois à Lisbonne ?", r:["Notre avion","Le tram 28","Le coucher de soleil"], ok:1},
+    {q:"Combien d'étoiles filantes a-t-on comptées cette nuit-là ?", r:["Sept","Onze","Vingt"], ok:1}
+  ],
+  bons: ["Un massage de 30 minutes","Un dîner où tu choisis tout","Une soirée film sans râler","Un petit-déjeuner au lit","Une journée où tu as raison","Un câlin illimité"],
+  coffre: "Regarde dans la poche intérieure de ta veste. Ça fait trois jours que ça t'attend.",
   question: "Tu veux bien continuer à écrire notre histoire avec moi ?",
   reponse: "Je le savais. Je t'aime."
 };
@@ -594,11 +676,9 @@ function majLancement(){
     if (cpt) cpt.hidden = true; if (noteL) noteL.hidden = true;
     return;
   }
-  const j = Math.floor(reste/864e5), h = Math.floor(reste/36e5)%24, m = Math.floor(reste/6e4)%60, sec = Math.floor(reste/1e3)%60;
-  const deux = n => String(n).padStart(2,"0");
-  if (cpt) cpt.innerHTML = `Fin dans ${j ? j + " j " : ""}${deux(h)}:${deux(m)}:${deux(sec)}<br>Ensuite ${PRIX_NORMAL}`;
+  if (cpt) cpt.innerHTML = `Offre de lancement<br>Bientôt <span class="chrono">${PRIX_NORMAL}</span>`;
 }
-setInterval(majLancement, 1000);
+setInterval(majLancement, 60000);
 
 /* ================= Connexion Supabase ================= */
 const SUPA_URL = "https://ejirggnjxfygjenqfcqn.supabase.co";
@@ -738,7 +818,7 @@ function lancerCarte(){
 
 /* États des surprises (conservés quand le site se redessine) */
 let allumees = new Set(), devs = new Set(), rets = new Set(), lettreOuverte = false, lettreTapee = false, dejaComplete = false, dejaRaisons = false, gratte = false, voeuAttrape = false, vusSections = new Set(), toutVu = false, filanteRAF = 0;
-function reinitSurprises(){ chapitre = 0; modeChapitres = true; segDebut = {}; ondes = []; completeDebut = 0; allumees = new Set(); devs = new Set(); rets = new Set(); lettreOuverte = false; lettreTapee = false; dejaComplete = false; dejaRaisons = false; gratte = false; voeuAttrape = false; vusSections = new Set(); toutVu = false; souvActif = 0; nonEssais = 0; }
+function reinitSurprises(){ reinitJeux(); chapitre = 0; modeChapitres = true; segDebut = {}; ondes = []; completeDebut = 0; allumees = new Set(); devs = new Set(); rets = new Set(); lettreOuverte = false; lettreTapee = false; dejaComplete = false; dejaRaisons = false; gratte = false; voeuAttrape = false; vusSections = new Set(); toutVu = false; souvActif = 0; nonEssais = 0; }
 function toutReveler(){
   S.souvenirs.forEach((_,i)=>allumees.add(i)); S.photos.forEach((_,i)=>devs.add(i)); S.raisons.forEach((_,i)=>rets.add(i));
   lettreOuverte = lettreTapee = true; dejaComplete = dejaRaisons = true; gratte = voeuAttrape = true; toutVu = true; modeChapitres = false;
@@ -832,6 +912,13 @@ function rendre(){
   </section>
 
   <section>
+    <p class="eyebrow">Un jeu</p>
+    <h2>Recolle les morceaux</h2>
+    <p class="intro-txt">Notre photo s'est mélangée. À toi de la reconstituer.</p>
+    <div id="puzzle-zone"></div>
+  </section>
+
+  <section>
     <p class="eyebrow">${S.raisons.length} raisons</p>
     <h2>Pourquoi toi</h2>
     <div class="raisons${toutesRet?" tous":""}" id="raisons">${raisons}</div>
@@ -839,10 +926,22 @@ function rendre(){
     <p class="encore" id="encore"${toutesRet?"":" hidden"}>Et il m'en reste des milliers.</p>
   </section>
 
+  ${quizValide().length ? `<section>
+    <p class="eyebrow">Le quiz</p>
+    <h2>Tu me connais vraiment ?</h2>
+    <div id="quiz-zone"></div>
+  </section>` : ""}
+
   ${(S.voeu||"").trim() ? `<section>
     <p class="eyebrow">Un vœu</p>
     <h2>Attrape l'étoile filante</h2>
     <div class="ciel-voeu" id="ciel-voeu">${voeuAttrape ? voeuHtml() : `<button class="filante" id="filante" aria-label="Attraper l'étoile filante"><i></i></button><p class="voeu-aide">Touche-la au passage. Elle garde un vœu pour toi.</p>`}</div>
+  </section>` : ""}
+
+  ${bonsValides().length >= 2 ? `<section>
+    <p class="eyebrow">Des cadeaux</p>
+    <h2>La roue des bons</h2>
+    <div id="roue-zone"></div>
   </section>` : ""}
 
   <section>
@@ -850,6 +949,12 @@ function rendre(){
     <h2>Ce que je n'ose pas toujours dire</h2>
     ${lettre}
   </section>
+
+  ${(S.coffre||"").trim() ? `<section>
+    <p class="eyebrow">Sous clé</p>
+    <h2>Trouve le code</h2>
+    <div id="coffre-zone"></div>
+  </section>` : ""}
 
   ${(S.secret||"").trim() ? `<section>
     <p class="eyebrow">Un secret</p>
@@ -964,12 +1069,200 @@ function rendre(){
   non.onpointerenter = e => { if (e.pointerType === "mouse") fuir(e); };
   non.onclick = fuir;
   tick();
+  rendrePuzzle(); rendreQuiz(); rendreRoue(); rendreCoffre();
   ajouterBoutonsSuite();
   appliquerChapitres();
   initGrattage();
   lancerFilante();
   lancerCarte();
   observerSections();
+}
+
+/* ================= Nouveaux jeux : puzzle, quiz, roue des bons, cadenas ================= */
+let quizIdx = 0, quizErreurs = 0, quizFini = false;
+let puzzleOrdre = null, puzzleSel = -1, puzzleFini = false, puzzleImg = "", puzzleCle = "";
+let bonsGagnes = [], roueAngle = 0, roueEnCours = false;
+let coffreChiffres = [0,0,0,0], coffreOuvert = false, coffreEssais = 0;
+function reinitJeux(){
+  quizIdx = 0; quizErreurs = 0; quizFini = false;
+  puzzleOrdre = null; puzzleSel = -1; puzzleFini = false;
+  bonsGagnes = []; roueAngle = 0; roueEnCours = false;
+  coffreChiffres = [0,0,0,0]; coffreOuvert = false; coffreEssais = 0;
+}
+const quizValide = () => (S.quiz || []).filter(q => q && (q.q || "").trim() && (q.r || []).filter(x => (x || "").trim()).length >= 2 && ((q.r || [])[+q.ok] || "").trim());
+const bonsValides = () => (S.bons || []).map(b => (b || "").trim()).filter(Boolean);
+function centre(el){ const r = el.getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height/2]; }
+
+/* ----- Puzzle photo ----- */
+function imagePuzzle(){
+  const p = (S.photos || []).find(x => x.src);
+  if (p) return p.src;
+  const cle = (S.pour || "") + "&" + (S.de || "") + "|" + S.date;
+  if (!puzzleImg || puzzleCle !== cle){
+    const c = document.createElement("canvas"); c.width = c.height = 720; const g = c.getContext("2d"), W = 720;
+    // ciel de coucher de soleil
+    const ciel = g.createLinearGradient(0,0,0,W);
+    ciel.addColorStop(0,"#2b1055"); ciel.addColorStop(.38,"#b0306f"); ciel.addColorStop(.62,"#ff6f7d"); ciel.addColorStop(.8,"#ffb37a"); ciel.addColorStop(1,"#ffd9a0");
+    g.fillStyle = ciel; g.fillRect(0,0,W,W);
+    // étoiles
+    for (let i=0;i<70;i++){ const x = (i*197)%W, y = (i*89)%300, r = .8 + (i%4)*.5; g.globalAlpha = .35 + (i%5)/8; g.fillStyle = "#fff"; g.beginPath(); g.arc(x,y,r,0,6.283); g.fill(); }
+    // soleil
+    g.globalAlpha = 1; const sol = g.createRadialGradient(540,470,10,540,470,190); sol.addColorStop(0,"#fff6c8"); sol.addColorStop(.35,"#ffd27a"); sol.addColorStop(1,"rgba(255,180,120,0)");
+    g.fillStyle = sol; g.fillRect(300,240,480,480);
+    g.fillStyle = "#fff1b8"; g.beginPath(); g.arc(540,470,70,0,6.283); g.fill();
+    // collines
+    g.fillStyle = "#5a1245"; g.beginPath(); g.moveTo(0,560); g.bezierCurveTo(160,470,330,600,470,540); g.bezierCurveTo(580,500,650,560,720,520); g.lineTo(720,720); g.lineTo(0,720); g.fill();
+    g.fillStyle = "#33092c"; g.beginPath(); g.moveTo(0,640); g.bezierCurveTo(200,560,380,690,720,600); g.lineTo(720,720); g.lineTo(0,720); g.fill();
+    // deux silhouettes main dans la main
+    g.fillStyle = "#1a0518";
+    const perso = (x, h, jupe) => { g.beginPath(); g.arc(x, 600-h, 17, 0, 6.283); g.fill(); g.beginPath(); if (jupe){ g.moveTo(x-13,620-h); g.lineTo(x+13,620-h); g.lineTo(x+30,668); g.lineTo(x-30,668); } else { g.moveTo(x-16,620-h); g.lineTo(x+16,620-h); g.lineTo(x+14,668); g.lineTo(x-14,668); } g.fill(); };
+    perso(215, 96, false); perso(285, 82, true);
+    g.strokeStyle = "#1a0518"; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(231,560); g.lineTo(250,585); g.lineTo(271,570); g.stroke();
+    // grand cœur dans le ciel avec les initiales
+    g.save(); g.shadowColor = "rgba(255,120,160,.9)"; g.shadowBlur = 40; g.fillStyle = "#ff4d7d"; g.beginPath(); cheminCoeur(g,250,230,270); g.fill(); g.restore();
+    g.fillStyle = "rgba(255,255,255,.22)"; g.beginPath(); cheminCoeur(g,225,205,120); g.fill();
+    g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "italic 78px Georgia, 'Times New Roman', serif";
+    g.fillText((S.pour || "").charAt(0) + " & " + (S.de || "").charAt(0), 250, 215);
+    // petits cœurs qui s'envolent
+    [[470,150,46,"#ffd6e0"],[560,90,30,"#fff"],[620,200,58,"#ff8fab"],[410,70,24,"#ff8fab"],[660,330,34,"#fff"],[90,90,34,"#ffb3c6"],[60,400,26,"#ffd6e0"]].forEach(([x,y,t,col]) => { g.globalAlpha = .9; g.fillStyle = col; g.beginPath(); cheminCoeur(g,x,y,t); g.fill(); });
+    // bandeau avec la date
+    g.globalAlpha = 1; g.fillStyle = "rgba(26,5,24,.55)"; g.fillRect(0,676,W,44);
+    g.fillStyle = "#ffe4ec"; g.font = "600 22px Georgia, serif"; g.fillText((S.pour || "") + " & " + (S.de || "") + "  ·  " + dateLisible(S.date), W/2, 699);
+    puzzleImg = c.toDataURL("image/jpeg", .88); puzzleCle = cle;
+  }
+  return puzzleImg;
+}
+function rendrePuzzle(victoire){
+  const z = $("#puzzle-zone"); if (!z) return;
+  if (!puzzleOrdre){
+    puzzleOrdre = [0,1,2,3,4,5,6,7,8];
+    if (!puzzleFini){ do { for (let i=8;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [puzzleOrdre[i],puzzleOrdre[j]] = [puzzleOrdre[j],puzzleOrdre[i]]; } } while (puzzleOrdre.filter((v,i)=>v===i).length > 2); }
+  }
+  const bons = puzzleOrdre.filter((v,i)=>v===i).length;
+  z.innerHTML = `<div class="puzzle-cadre${puzzleFini ? " fini" : ""}${victoire ? " victoire" : ""}" id="puzzle-cadre">
+      <div class="puzzle" id="puzzle">${puzzleOrdre.map((v,pos)=>`<button type="button" class="tuile${pos===puzzleSel ? " sel" : ""}${v===pos && !puzzleFini ? " ok" : ""}" data-pos="${pos}" aria-label="Morceau ${pos+1}${v===pos ? ", bien placé" : ""}" style="--d:${pos};background-position:${(v%3)*50}% ${Math.floor(v/3)*50}%"></button>`).join("")}</div>
+      <span class="puzzle-eclat" aria-hidden="true"></span>
+      <p class="puzzle-leg">${esc(S.pour)} &amp; ${esc(S.de)}</p>
+    </div>
+    <p class="astuce" id="puzzle-msg">${puzzleFini ? "" : `Touche deux morceaux pour les échanger. ${bons} sur 9 bien placé${bons > 1 ? "s" : ""}.`}</p>
+    <p class="encore"${puzzleFini ? "" : " hidden"}>Nous deux, c'est une évidence.</p>`;
+  $("#puzzle").style.setProperty("--img", `url("${imagePuzzle()}")`);
+  if (puzzleFini) return;
+  z.querySelectorAll(".tuile").forEach(t => t.onclick = () => {
+    const pos = +t.dataset.pos;
+    if (puzzleSel === -1){ puzzleSel = pos; rendrePuzzle(); return; }
+    if (puzzleSel === pos){ puzzleSel = -1; rendrePuzzle(); return; }
+    [puzzleOrdre[puzzleSel], puzzleOrdre[pos]] = [puzzleOrdre[pos], puzzleOrdre[puzzleSel]]; puzzleSel = -1;
+    if (puzzleOrdre.every((v,i)=>v===i)){
+      puzzleFini = true; rendrePuzzle(true);
+      const cadre = $("#puzzle-cadre"), r = cadre.getBoundingClientRect();
+      try{ navigator.vibrate && navigator.vibrate([40,60,40,60,120]); }catch(e){}
+      // gerbes de cœurs aux quatre coins, puis au centre
+      [[r.left,r.top],[r.right,r.top],[r.left,r.bottom],[r.right,r.bottom]].forEach(([x,y],k) => setTimeout(()=>eclat(x, y, 22, false, true), 150*k));
+      setTimeout(()=>{ eclat(r.left + r.width/2, r.top + r.height/2, 70, false, true); pluieDeCoeurs(.7); }, 900);
+    } else rendrePuzzle();
+  });
+}
+
+/* ----- Quiz ----- */
+function rendreQuiz(){
+  const z = $("#quiz-zone"); if (!z) return;
+  const Q = quizValide(); if (!Q.length) return;
+  if (quizIdx >= Q.length) quizFini = true;
+  const jauge = `<div class="quiz-jauge" aria-hidden="true">${Q.map((_,i)=>`<i class="ico-coeur${i < quizIdx || quizFini ? " plein" : ""}"></i>`).join("")}</div>`;
+  if (quizFini){
+    z.innerHTML = jauge + `<div class="quiz-fin"><p class="quiz-score">${quizErreurs === 0 ? "Sans une seule erreur" : "Tu as tout trouvé"}</p><p class="encore">${quizErreurs === 0 ? "Tu me connais par cœur." : "Tu me connais presque par cœur."}</p></div>`;
+    return;
+  }
+  const q = Q[quizIdx];
+  z.innerHTML = jauge + `<div class="quiz-carte"><span class="quiz-num">Question ${quizIdx+1} sur ${Q.length}</span><p class="quiz-q">${esc(q.q)}</p>
+    <div class="quiz-rep">${q.r.map((r,k)=>(r || "").trim() ? `<button type="button" data-k="${k}">${esc(r)}</button>` : "").join("")}</div>
+    <p class="quiz-msg" id="quiz-msg" role="status"></p></div>`;
+  z.querySelectorAll(".quiz-rep button").forEach(b => b.onclick = () => {
+    if (+b.dataset.k === +q.ok){
+      b.classList.add("juste"); eclat(...centre(b), 20, false, true);
+      try{ navigator.vibrate && navigator.vibrate(25); }catch(e){}
+      z.querySelectorAll(".quiz-rep button").forEach(x => x.disabled = true);
+      $("#quiz-msg").textContent = "Exactement.";
+      setTimeout(()=>{ quizIdx++; if (quizIdx >= Q.length){ quizFini = true; pluieDeCoeurs(.4); } rendreQuiz(); }, 950);
+    } else {
+      quizErreurs++; b.classList.add("faux"); b.disabled = true;
+      $("#quiz-msg").textContent = ["Presque… essaie encore.", "Raté ! Tu chauffes.", "Non plus… réfléchis bien."][Math.min(quizErreurs-1, 2)];
+    }
+  });
+}
+
+/* ----- Roue des bons ----- */
+function bonHtml(t){ return `<div class="bon"><span class="bon-lab">Bon pour</span><span class="bon-txt">${esc(t)}</span></div>`; }
+function dessinerRoue(B){
+  const cv = $("#roue-cv"), g = cv.getContext("2d"), n = B.length, R = 300; lirePalette();
+  const cols = n % 2 ? [pal.rose, pal.rouge, "#ff8fab"] : [pal.rose, pal.rouge];
+  g.clearRect(0,0,600,600);
+  for (let i=0;i<n;i++){
+    const a0 = -Math.PI/2 + i*2*Math.PI/n, a1 = a0 + 2*Math.PI/n, pris = bonsGagnes.includes(i);
+    g.beginPath(); g.moveTo(R,R); g.arc(R,R,R-8,a0,a1); g.closePath();
+    g.fillStyle = cols[i % cols.length]; g.globalAlpha = pris ? .28 : 1; g.fill();
+    g.globalAlpha = 1; g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.stroke();
+    g.save(); g.translate(R,R); g.rotate((a0+a1)/2); g.textAlign = "right"; g.textBaseline = "middle";
+    g.fillStyle = "#fff"; g.globalAlpha = pris ? .5 : 1; g.font = "700 " + (n > 7 ? 18 : 21) + "px Karla, system-ui, sans-serif";
+    let t = B[i]; const max = n > 7 ? 14 : 17; if (t.length > max) t = t.slice(0, max-1) + "…";
+    g.fillText(t, R-28, 0); g.restore();
+  }
+  g.beginPath(); g.arc(R,R,R-8,0,6.283); g.strokeStyle = pal.gold; g.lineWidth = 8; g.stroke();
+}
+function rendreRoue(){
+  const z = $("#roue-zone"); if (!z) return;
+  const B = bonsValides(); if (B.length < 2) return;
+  bonsGagnes = bonsGagnes.filter(i => i < B.length);
+  const MAX_BONS = Math.min(3, B.length);
+  const lancers = MAX_BONS - bonsGagnes.length;
+  const reste = lancers > 0 ? B.map((_,i)=>i).filter(i => !bonsGagnes.includes(i)) : [];
+  z.innerHTML = `<div class="roue-cadre"><span class="roue-fleche" aria-hidden="true"></span><canvas id="roue-cv" width="600" height="600" role="img" aria-label="Roue des bons"></canvas>
+      <button type="button" class="roue-btn" id="roue-btn"${reste.length ? "" : " disabled"}>${reste.length ? "Lancer" : "Bravo"}</button></div>
+    <p class="astuce" id="roue-msg">${reste.length ? (bonsGagnes.length ? `Encore ${lancers} lancer${lancers > 1 ? "s" : ""}. Relance !` : `Tu as ${MAX_BONS} lancers. Chaque lancer te fait gagner un bon.`) : `Voilà tes ${MAX_BONS} bons. Ils n'ont pas de date limite.`}</p>
+    <div class="bons" id="bons-liste">${bonsGagnes.map(i => bonHtml(B[i])).join("")}</div>`;
+  dessinerRoue(B);
+  const cv = $("#roue-cv"); cv.style.transform = `rotate(${roueAngle}deg)`;
+  $("#roue-btn").onclick = () => {
+    if (roueEnCours || !reste.length) return; roueEnCours = true;
+    const cible = reste[Math.floor(Math.random()*reste.length)], pas = 360/B.length;
+    roueAngle = Math.ceil(roueAngle/360)*360 + 360*4 + (360 - (cible + .5)*pas);
+    cv.style.transition = reduit ? "none" : "transform 4.2s cubic-bezier(.12,.75,.1,1)";
+    cv.style.transform = `rotate(${roueAngle}deg)`;
+    $("#roue-btn").disabled = true;
+    setTimeout(()=>{
+      roueEnCours = false; bonsGagnes.push(cible);
+      const c = $("#roue-cv"); if (c) eclat(...centre(c), 40, false, true);
+      try{ navigator.vibrate && navigator.vibrate(40); }catch(e){}
+      rendreRoue();
+      const d = $("#bons-liste"); if (d && d.lastElementChild) d.lastElementChild.classList.add("nouveau");
+    }, reduit ? 60 : 4300);
+  };
+}
+
+/* ----- Cadenas : le code est le jour et le mois de la rencontre ----- */
+const CADENAS_SVG = '<svg viewBox="0 0 120 150" aria-hidden="true"><defs><linearGradient id="gc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rose)"/><stop offset="1" stop-color="var(--rouge)"/></linearGradient></defs><path class="anse" d="M34 74V46a26 26 0 0 1 52 0v28" fill="none" stroke="var(--gold)" stroke-width="11" stroke-linecap="round"/><rect x="16" y="68" width="88" height="70" rx="16" fill="url(#gc)"/><path transform="translate(42 85) scale(1.5)" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#fff" opacity=".92"/></svg>';
+function codeCoffre(){ const d = new Date(S.date); if (isNaN(d)) return "1402"; return String(d.getDate()).padStart(2,"0") + String(d.getMonth()+1).padStart(2,"0"); }
+function rendreCoffre(){
+  const z = $("#coffre-zone"); if (!z) return;
+  if (coffreOuvert){
+    z.innerHTML = `<div class="cadenas ouvert">${CADENAS_SVG}</div><div class="coffre-tresor"><span class="bon-lab">Ce que je gardais sous clé</span><p>${esc(S.coffre)}</p></div>`;
+    return;
+  }
+  z.innerHTML = `<div class="cadenas" id="cadenas">${CADENAS_SVG}</div>
+    <div class="molettes">${coffreChiffres.map((c,i)=>`${i === 2 ? '<span class="molette-sep" aria-hidden="true">/</span>' : ""}<div class="molette"><button type="button" class="haut" data-i="${i}" data-d="1" aria-label="Chiffre ${i+1} : augmenter"></button><b id="chiffre-${i}">${c}</b><button type="button" class="bas" data-i="${i}" data-d="-1" aria-label="Chiffre ${i+1} : diminuer"></button></div>`).join("")}</div>
+    <p class="astuce" id="coffre-msg">${coffreEssais >= 16 ? "Indice : le jour, puis le mois de notre rencontre. Par exemple 14 / 02." : "Le code ? Le jour et le mois où tout a commencé."}</p>`;
+  z.querySelectorAll(".molette button").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i; coffreChiffres[i] = (coffreChiffres[i] + (+b.dataset.d) + 10) % 10; coffreEssais++;
+    const el = $("#chiffre-" + i); el.textContent = coffreChiffres[i]; el.classList.remove("tic"); void el.offsetWidth; el.classList.add("tic");
+    if (coffreEssais === 16) $("#coffre-msg").textContent = "Indice : le jour, puis le mois de notre rencontre. Par exemple 14 / 02.";
+    if (coffreChiffres.join("") === codeCoffre()){
+      z.querySelectorAll(".molette button").forEach(x => x.disabled = true);
+      $("#cadenas").classList.add("ouvert");
+      try{ navigator.vibrate && navigator.vibrate([30,50,80]); }catch(e){}
+      setTimeout(()=>{ coffreOuvert = true; const c = $("#cadenas"); if (c) eclat(...centre(c), 50, false, true); pluieDeCoeurs(.4); rendreCoffre(); }, reduit ? 0 : 900);
+    }
+  });
 }
 
 /* ================= Chapitres : une partie à la fois ================= */
@@ -1527,6 +1820,33 @@ function construireEditeur(){
     <div class="champ"><label for="f-secret">Le message secret à gratter</label><textarea id="f-secret" data-k="secret" rows="3" maxlength="160">${esc(S.secret)}</textarea></div>
   </details>
 
+  <details><summary>Quiz (${(S.quiz||[]).length})</summary>
+    <p class="note" style="margin:0 0 10px">Posez des questions sur votre histoire. Trois réponses possibles, une seule bonne.</p>
+    ${(S.quiz||[]).map((q,i)=>`
+      <div class="bloc">
+        <div class="bloc-tete">Question ${i+1}<button class="suppr" data-del="quiz" data-i="${i}">Retirer</button></div>
+        <div class="champ"><label for="q-q-${i}">La question</label><input id="q-q-${i}" data-l="quiz" data-i="${i}" data-f="q" value="${esc(q.q)}" maxlength="110"></div>
+        ${[0,1,2].map(k=>`<div class="champ"><label for="q-r-${i}-${k}">Réponse ${k+1}</label><input id="q-r-${i}-${k}" data-l="quiz" data-i="${i}" data-f="r${k}" value="${esc((q.r||[])[k]||"")}" maxlength="40"></div>`).join("")}
+        <div class="champ"><label for="q-ok-${i}">La bonne réponse</label><select id="q-ok-${i}" data-l="quiz" data-i="${i}" data-f="ok">${[0,1,2].map(k=>`<option value="${k}"${+q.ok===k?" selected":""}>Réponse ${k+1}</option>`).join("")}</select></div>
+      </div>`).join("")}
+    ${(S.quiz||[]).length < 6 ? `<button class="ajout" data-add="quiz">+ Ajouter une question</button>` : ""}
+  </details>
+
+  <details><summary>Roue des bons (${(S.bons||[]).length})</summary>
+    <p class="note" style="margin:0 0 10px">Des « bons pour… » sur une roue. Votre moitié a 3 lancers et gagne 3 bons au hasard. Mettez-en au moins deux, idéalement six.</p>
+    ${(S.bons||[]).map((b,i)=>`
+      <div class="bloc">
+        <div class="bloc-tete">Bon ${i+1}<button class="suppr" data-del="bons" data-i="${i}">Retirer</button></div>
+        <div class="champ"><label for="b-${i}">Bon pour…</label><input id="b-${i}" data-l="bons" data-i="${i}" value="${esc(b)}" maxlength="34"></div>
+      </div>`).join("")}
+    ${(S.bons||[]).length < 10 ? `<button class="ajout" data-add="bons">+ Ajouter un bon</button>` : ""}
+  </details>
+
+  <details><summary>Cadenas secret</summary>
+    <div class="champ"><label for="f-coffre">Le message caché derrière le cadenas</label><textarea id="f-coffre" data-k="coffre" rows="3" maxlength="220">${esc(S.coffre||"")}</textarea></div>
+    <p class="note" style="margin:0">Le code est le jour et le mois de votre rencontre : <strong>${codeCoffre().slice(0,2)} / ${codeCoffre().slice(2)}</strong>. Il change si vous modifiez la date. Laissez le message vide pour retirer ce jeu.</p>
+  </details>
+
   <details><summary>Lettre</summary>
     <div class="champ"><label for="f-lettre">Votre lettre</label><textarea id="f-lettre" data-k="lettre" rows="10" maxlength="2500">${esc(S.lettre)}</textarea></div>
   </details>
@@ -1546,7 +1866,9 @@ corps.addEventListener("input", e=>{
   if (el.dataset.k){ S[el.dataset.k] = el.value; }
   else if (el.dataset.l){
     const l = el.dataset.l, i = +el.dataset.i;
-    if (l === "raisons") S.raisons[i] = el.value; else S[l][i][el.dataset.f] = el.value;
+    if (l === "raisons" || l === "bons") S[l][i] = el.value;
+    else if (l === "quiz"){ const f = el.dataset.f; if (f === "ok") S.quiz[i].ok = +el.value; else if (f[0] === "r"){ S.quiz[i].r = S.quiz[i].r || ["","",""]; S.quiz[i].r[+f[1]] = el.value; } else S.quiz[i].q = el.value; quizIdx = 0; quizFini = false; quizErreurs = 0; }
+    else S[l][i][el.dataset.f] = el.value;
   } else return;
   $("#commande").hidden = true; $("#gen-lien").hidden = false;
   rendreBientot();
@@ -1583,6 +1905,8 @@ corps.addEventListener("click", e=>{
     if (l==="souvenirs") S.souvenirs.push({titre:"Nouveau souvenir",date:"",texte:""});
     if (l==="photos") S.photos.push({src:"",legende:""});
     if (l==="raisons") S.raisons.push("Une nouvelle raison");
+    if (l==="quiz"){ S.quiz = S.quiz || []; S.quiz.push({q:"", r:["","",""], ok:0}); }
+    if (l==="bons"){ S.bons = S.bons || []; S.bons.push(""); }
     construireEditeur(); rendre(); sauver();
   }
 });
@@ -1594,7 +1918,7 @@ $("#voir-ouv").onclick = ()=>{ ed.classList.remove("ouvert"); ouverture(); };
 let confirmeReinit = false;
 $("#reinit").onclick = ()=>{
   if (!confirmeReinit){ confirmeReinit = true; $("#reinit-conf").hidden = false; setTimeout(()=>{ confirmeReinit=false; $("#reinit-conf").hidden = true; }, 4000); return; }
-  S = {pour:"Prénom", de:"Moi", date:new Date().toISOString().slice(0,16), accroche:"", ambiance:"nuit", souvenirs:[{titre:"Notre premier souvenir",date:"",texte:""}], photos:[{src:"",legende:""}], raisons:["Une raison"], lettre:"", question:"", reponse:""};
+  S = {pour:"Prénom", de:"Moi", date:new Date().toISOString().slice(0,16), accroche:"", ambiance:"nuit", souvenirs:[{titre:"Notre premier souvenir",date:"",texte:""}], photos:[{src:"",legende:""}], raisons:["Une raison"], lettre:"", question:"", reponse:"", voeu:"", secret:"", quiz:[], bons:[], coffre:""};
   confirmeReinit = false; $("#reinit-conf").hidden = true;
   souvActif = 0; construireEditeur(); rendre(); sauver(); toast("Site vidé. À vous d'écrire.");
 };
@@ -1651,7 +1975,7 @@ if (idCadeau){
   document.body.classList.add("cadeau");
   const o = $("#ouverture"); intro.attente();
   chargerCadeau(idCadeau)
-    .then(d => { S = {...clone(EXEMPLE), ...d}; modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
+    .then(d => { S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; }); modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
     .catch(() => {
       document.body.classList.remove("cadeau"); o.hidden = true; lancerCompte();
       toast("Ce cadeau n'est pas encore en ligne. Réessayez dans quelques minutes.");
