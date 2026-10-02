@@ -598,10 +598,9 @@ body.cadeau .avis{display:none}
 .merci-note{font-size:.78rem;color:var(--muted);margin:16px 0 0;line-height:1.45}
 
 /* « Comment ça marche ? » : étapes, questions, contact, pages légales */
-.infos-btn{position:fixed;right:16px;top:calc(12px + env(safe-area-inset-top,0px));z-index:30;background:var(--ink-2);color:var(--text);border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-size:.75rem;font-weight:700;letter-spacing:.04em}
+.infos-btn{position:fixed;right:16px;top:calc(46px + env(safe-area-inset-top,0px));z-index:30;background:var(--ink-2);color:var(--text);border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-size:.75rem;font-weight:700;letter-spacing:.04em}
 .infos-btn:hover{border-color:var(--rose)}
 body.cadeau .infos-btn{display:none}
-@media (max-width:420px){.infos-btn{top:calc(50px + env(safe-area-inset-top,0px))}}
 #infos{position:fixed;inset:0;z-index:51;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px;background:var(--ink);overflow-y:auto}
 #infos[hidden]{display:none}
 .infos-carte{position:relative;width:min(560px,100%);background:var(--ink-2);border:1px solid var(--line);border-radius:22px;padding:28px 22px;box-shadow:0 0 80px -20px var(--glow);margin:auto 0}
@@ -631,6 +630,16 @@ body.cadeau .infos-btn{display:none}
 .ed-aller{position:sticky;bottom:0;z-index:3;flex-shrink:0;margin-top:auto;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,#faf6f3 70%,rgba(250,246,243,0))}
 .ed-aller button{width:100%;background:#b0405f;color:#fff;border:0;border-radius:99px;padding:13px;font-weight:700;box-shadow:0 8px 22px rgba(176,64,95,.3)}
 .ed-aller[hidden]{display:none}
+
+/* Musique de fond : bouton pour couper ou remettre le son */
+.son{position:fixed;right:16px;top:calc(42px + env(safe-area-inset-top,0px));z-index:30;width:40px;height:40px;border-radius:50%;background:var(--ink-2);color:var(--text);border:1px solid var(--line);display:grid;place-items:center;padding:0}
+.son[hidden]{display:none}
+.son:hover{border-color:var(--rose)}
+.son svg{width:20px;height:20px}
+.son .barre{display:none}
+.son.muet .barre{display:block}
+.son.muet .ondes{display:none}
+body.avec-son .infos-btn{right:66px}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -675,6 +684,9 @@ body.cadeau .infos-btn{display:none}
 
 <main id="site"></main>
 
+<button class="son" id="son" type="button" hidden aria-label="Couper la musique" aria-pressed="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5Z" fill="currentColor"/><g class="ondes"><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></g><g class="barre"><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/></g></svg>
+</button>
 <button class="rejouer" id="rejouer" aria-label="Rejouer l'ouverture">✦ Rejouer l'ouverture</button>
 
 <div id="merci" hidden role="dialog" aria-label="Votre code d'accès">
@@ -806,6 +818,7 @@ const EXEMPLE = {
   date: "2023-02-14T20:30",
   accroche: "Depuis ce soir-là, chaque seconde a compté.",
   ambiance: "passion",
+  musique: "boite",
   souvenirs: [
     {titre:"Le premier regard", date:"14 février 2023", texte:"Un café trop sucré, une table trop petite, et toi qui riais de mes blagues nulles. J'ai su à ce moment-là que je voulais te revoir."},
     {titre:"Notre premier voyage", date:"Juillet 2023", texte:"Lisbonne, les ruelles en pente, le tram 28 qu'on a raté trois fois. On s'est perdus, et c'était parfait."},
@@ -1118,7 +1131,99 @@ function toutReveler(){
 }
 let tapeur = null, juste = -1;
 
+
+/* ================= Musique de fond : mélodies originales, jouées par le site (aucun fichier audio) ================= */
+const MUSIQUES = [{id:"", nom:"Aucune musique"}, {id:"boite", nom:"Boîte à musique"}, {id:"piano", nom:"Piano doux"}, {id:"nuit", nom:"Nuit étoilée"}];
+const musique = (function(){
+  let ctx = null, entree = null, maitre = null, piste = "", pas = 0, tProchain = 0, muet = false;
+  try { muet = localStorage.getItem("constellation-muet") === "1"; } catch(e){}
+  const VOLUME = .5, hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  function note(t, m, duree, timbre, vol){
+    const g = ctx.createGain(), f = hz(m); let cible = g, fin;
+    const osc = (type, freq, det) => { const o = ctx.createOscillator(); o.type = type; o.frequency.value = freq; if (det) o.detune.value = det; o.start(t); return o; };
+    const filtre = coupe => { const b = ctx.createBiquadFilter(); b.type = "lowpass"; b.frequency.value = coupe; b.connect(g); cible = b; };
+    const partiel = (o, niveau) => { const p = ctx.createGain(); p.gain.value = niveau; o.connect(p); p.connect(cible); };
+    let oscs;
+    if (timbre === "nappe"){
+      filtre(650); oscs = [osc("sawtooth", f, -7), osc("sawtooth", f, 7)]; oscs.forEach(o => o.connect(cible));
+      fin = t + duree + 1.8;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 1.4); g.gain.setValueAtTime(vol, t + duree); g.gain.linearRampToValueAtTime(0, fin);
+    } else {
+      let chute;
+      if (timbre === "boite"){ oscs = [osc("sine", f), osc("sine", f * 3)]; oscs[0].connect(cible); partiel(oscs[1], .12); chute = 1.6; }
+      else if (timbre === "piano"){ filtre(1900); oscs = [osc("triangle", f), osc("sine", f * 2)]; oscs[0].connect(cible); partiel(oscs[1], .18); chute = Math.max(1.3, duree * 2.2); }
+      else { oscs = [osc("sine", f), osc("sine", f * 2)]; oscs[0].connect(cible); partiel(oscs[1], .1); chute = 2.8; }
+      fin = t + chute + .1;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0008, t + chute);
+    }
+    oscs.forEach(o => o.stop(fin));
+    g.connect(entree);
+  }
+  const BOITE_M = [76,79,84,79,76,79, 76,81,84,81,76,81, 77,81,84,81,77,81, 74,79,83,79,74,79, 84,79,76,79,84,88, 81,84,88,84,81,76, 77,81,84,89,84,81, 79,83,86,83,79,74];
+  const BOITE_B = [60,57,53,55,60,57,53,55];
+  const PIANO_G = [[45,52,57,60,64,60,57,52],[41,48,53,57,60,57,53,48],[48,55,60,64,67,64,60,55],[43,50,55,59,62,59,55,50]];
+  const PIANO_M = {0:[76,4],4:[72,2],6:[71,2], 8:[69,6],14:[72,2], 16:[76,4],20:[79,4], 24:[74,6],30:[71,2], 32:[72,2],34:[76,2],36:[81,4], 40:[79,2],42:[77,2],44:[72,4], 48:[76,4],52:[74,2],54:[72,2], 56:[74,8]};
+  const NUIT_A = [[50,57,62,66,69],[47,54,59,62,66],[43,50,55,59,66],[45,52,57,61,64]];
+  const NUIT_C = {2:81,6:78, 12:74,15:78, 18:83,21:79,22:78, 26:76,28:73,30:81};
+  const PISTES = {
+    boite: {dt:.3125, n:48, jouer(i, t){ note(t, BOITE_M[i], .3, "boite", .2); if (i % 6 === 0) note(t, BOITE_B[i / 6], .9, "boite", .16); }},
+    piano: {dt:.4167, n:64, jouer(i, t){ note(t, PIANO_G[(i >> 3) % 4][i % 8], .4, "piano", i % 8 === 0 ? .15 : .1); const m = PIANO_M[i]; if (m) note(t, m[0], m[1] * .4167, "piano", .2); }},
+    nuit:  {dt:.5, n:32, jouer(i, t){ if (i % 8 === 0) NUIT_A[i >> 3].forEach(m => note(t, m, 4, "nappe", .035)); const c = NUIT_C[i]; if (c) note(t, c, 2, "cloche", .12); }}
+  };
+  function preparer(){
+    if (ctx) return true;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    try {
+      ctx = new AC();
+      maitre = ctx.createGain(); maitre.gain.value = 0;
+      const comp = ctx.createDynamicsCompressor(); maitre.connect(comp); comp.connect(ctx.destination);
+      entree = ctx.createGain(); entree.connect(maitre);
+      const echo = ctx.createDelay(1), retour = ctx.createGain(), mouille = ctx.createGain();
+      echo.delayTime.value = .36; retour.gain.value = .28; mouille.gain.value = .22;
+      entree.connect(echo); echo.connect(retour); retour.connect(echo); echo.connect(mouille); mouille.connect(maitre);
+      setInterval(boucle, 100);
+    } catch(e){ ctx = null; return false; }
+    return true;
+  }
+  function boucle(){
+    if (!ctx || !piste || muet || ctx.state !== "running") return;
+    const P = PISTES[piste];
+    if (tProchain < ctx.currentTime) tProchain = ctx.currentTime + .1;
+    while (tProchain < ctx.currentTime + .5){ P.jouer(pas % P.n, tProchain); tProchain += P.dt; pas++; }
+  }
+  function niveau(v){ if (!ctx) return; const n = ctx.currentTime; maitre.gain.cancelScheduledValues(n); maitre.gain.setValueAtTime(maitre.gain.value, n); maitre.gain.linearRampToValueAtTime(v, n + .6); }
+  function voulue(){ const m = document.getElementById("merci"); return (m && !m.hidden) ? "" : (PISTES[S.musique] ? S.musique : ""); }
+  function bouton(){
+    const b = document.getElementById("son"); if (!b) return;
+    const active = !!PISTES[S.musique];
+    b.hidden = !active; document.body.classList.toggle("avec-son", active);
+    b.classList.toggle("muet", muet); b.setAttribute("aria-pressed", String(muet)); b.setAttribute("aria-label", muet ? "Remettre la musique" : "Couper la musique");
+  }
+  function sync(){
+    bouton();
+    if (!ctx) return;
+    const v = voulue();
+    if (v !== piste){ piste = v; pas = 0; tProchain = ctx.currentTime + .25; }
+    niveau(piste && !muet ? VOLUME : 0);
+  }
+  function geste(){
+    if (muet || !voulue()) return;
+    if (!preparer()) return;
+    if (ctx.state === "suspended") ctx.resume().then(sync, () => {});
+    sync();
+  }
+  ["pointerup", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, geste, {passive: true}));
+  document.addEventListener("visibilitychange", () => { if (!ctx) return; if (document.hidden) ctx.suspend(); else if (!muet && piste) ctx.resume(); });
+  function basculer(){
+    muet = !muet; try { localStorage.setItem("constellation-muet", muet ? "1" : "0"); } catch(e){}
+    if (!muet){ if (preparer() && ctx.state === "suspended") ctx.resume().then(sync, () => {}); }
+    sync();
+  }
+  return {sync, basculer, etat: () => ({piste, muet, ctx: ctx ? ctx.state : "aucun", pas})};
+})();
+document.getElementById("son").addEventListener("click", e => { e.stopPropagation(); musique.basculer(); });
 function rendre(){
+  musique.sync();
   document.body.classList.remove("amb-aube","amb-braise","amb-passion");
   if (S.ambiance && S.ambiance !== "nuit") document.body.classList.add("amb-" + S.ambiance);
   clearInterval(tapeur); cancelAnimationFrame(filanteRAF);
@@ -2094,6 +2199,8 @@ function construireEditeur(){
 
   <details><summary>Ambiance</summary>
     <div class="ambiances">${AMB.map(a=>`<button class="amb${S.ambiance===a.id?" on":""}" data-amb="${a.id}"><span style="background:${a.fond}"></span>${a.nom}</button>`).join("")}</div>
+    <div class="champ" style="margin-top:14px"><label for="f-musique">Musique de fond (facultatif)</label><select id="f-musique" data-k="musique">${MUSIQUES.map(m=>`<option value="${m.id}"${(S.musique||"")===m.id?" selected":""}>${m.nom}</option>`).join("")}</select></div>
+    <p class="note" style="margin:6px 0 0">Sans choix de votre part, votre site n'a pas de musique. Si vous en ajoutez une, elle démarre quand la personne touche l'écran, et elle peut la couper avec le bouton en haut à droite.</p>
   </details>
 
   <details><summary>Souvenirs (${S.souvenirs.length})</summary>
@@ -2186,7 +2293,7 @@ corps.addEventListener("input", e=>{
     else if (l === "quiz"){ const f = el.dataset.f; if (f === "ok") S.quiz[i].ok = +el.value; else if (f[0] === "r"){ S.quiz[i].r = S.quiz[i].r || ["","",""]; S.quiz[i].r[+f[1]] = el.value; } else S.quiz[i].q = el.value; quizIdx = 0; quizFini = false; quizErreurs = 0; }
     else S[l][i][el.dataset.f] = el.value;
   } else return;
-  $("#commande").hidden = true; $("#gen-lien").hidden = false;
+  if (!modifCode) $("#commande").hidden = true; $("#gen-lien").hidden = false;
   rendreBientot();
 });
 
@@ -2227,14 +2334,14 @@ corps.addEventListener("click", e=>{
   }
 });
 
-$("#btn-edit").onclick = ()=>{ if (!brouillonCharge){ brouillonCharge = true; try { const d = localStorage.getItem("constellation-brouillon-v2"); if (d){ S = {...clone(EXEMPLE), ...JSON.parse(d)}; construireEditeur(); } } catch(e){} } ed.classList.add("ouvert"); toutReveler(); if (compteDebut === null) compteDebut = -1e9; rendre(); };
+$("#btn-edit").onclick = ()=>{ if (!brouillonCharge){ brouillonCharge = true; try { const d = localStorage.getItem("constellation-brouillon-v2"); if (d){ const b = JSON.parse(d); S = {...clone(EXEMPLE), ...b}; if (!("musique" in b)) S.musique = ""; } else S.musique = ""; construireEditeur(); } catch(e){} } ed.classList.add("ouvert"); toutReveler(); if (compteDebut === null) compteDebut = -1e9; rendre(); };
 $("#fermer-edit").onclick = ()=>{ ed.classList.remove("ouvert"); };
 $("#voir-ouv").onclick = ()=>{ ed.classList.remove("ouvert"); ouverture(); };
 
 let confirmeReinit = false;
 $("#reinit").onclick = ()=>{
   if (!confirmeReinit){ confirmeReinit = true; $("#reinit-conf").hidden = false; setTimeout(()=>{ confirmeReinit=false; $("#reinit-conf").hidden = true; }, 4000); return; }
-  S = {pour:"Prénom", de:"Moi", date:new Date().toISOString().slice(0,16), accroche:"", ambiance:"nuit", souvenirs:[{titre:"Notre premier souvenir",date:"",texte:""}], photos:[{src:"",legende:""}], raisons:["Une raison"], lettre:"", question:"", reponse:"", voeu:"", secret:"", quiz:[], bons:[], coffre:""};
+  S = {pour:"Prénom", de:"Moi", date:new Date().toISOString().slice(0,16), accroche:"", ambiance:"nuit", musique:"", souvenirs:[{titre:"Notre premier souvenir",date:"",texte:""}], photos:[{src:"",legende:""}], raisons:["Une raison"], lettre:"", question:"", reponse:"", voeu:"", secret:"", quiz:[], bons:[], coffre:""};
   confirmeReinit = false; $("#reinit-conf").hidden = true;
   souvActif = 0; construireEditeur(); rendre(); sauver(); toast("Site vidé. À vous d'écrire.");
 };
@@ -2251,7 +2358,7 @@ $("#modif-go").onclick = async () => {
     const rep = await rpc("ouvrir_cadeau", {p_code: code});
     if (!rep || !rep.data){ res.textContent = "Aucun site n'a été créé avec ce code. Vérifiez-le : s'il n'a pas encore servi, utilisez « Créer mon site »."; return; }
     const d = rep.data;
-    S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; });
+    S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre","musique"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; });
     delete S.id; brouillonCharge = true; souvActif = 0; construireEditeur(); rendre(); sauver();
     passerEnModif(code); $("#commande").hidden = true; $("#gen-lien").hidden = false; $("#etat-creation").textContent = "";
     res.textContent = "Votre site est chargé. Faites vos changements, puis cliquez sur « Enregistrer mes modifications ». Le lien restera le même.";
@@ -2295,7 +2402,7 @@ $("#gen-lien").onclick = async ()=>{
     pluieDeCoeurs(.6);
   } catch(e){
     const m = String(e && e.message || "");
-    etat.textContent = /code_invalide/.test(m) ? "Ce code vient déjà d'être utilisé." : "La création n'a pas marché. Vérifiez votre connexion internet et réessayez. Si ça bloque encore, contactez la personne qui vous a donné le code.";
+    etat.textContent = enModif ? "Vos modifications n'ont pas pu être enregistrées. Votre site et son lien n'ont pas changé. Vérifiez votre connexion et réessayez." : /code_invalide/.test(m) ? "Ce code vient déjà d'être utilisé." : "La création n'a pas marché. Vérifiez votre connexion internet et réessayez. Si ça bloque encore, contactez la personne qui vous a donné le code.";
   } finally { btn.disabled = false; }
 };
 try { const c = localStorage.getItem("constellation-dernier-code"); if (c) $("#a-code").value = c; } catch(e){}
@@ -2337,7 +2444,7 @@ if (idCadeau){
   document.body.classList.add("cadeau");
   const o = $("#ouverture"); intro.attente();
   chargerCadeau(idCadeau)
-    .then(d => { S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; }); modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
+    .then(d => { S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre","musique"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; }); modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
     .catch(() => {
       document.body.classList.remove("cadeau"); o.hidden = true; lancerCompte();
       toast("Ce cadeau n'est pas encore en ligne. Réessayez dans quelques minutes.");
