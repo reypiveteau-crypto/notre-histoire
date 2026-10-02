@@ -540,6 +540,16 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
 .btn-retour:hover{color:var(--text);border-color:var(--rose)}
 .btn-retour i{width:8px;height:8px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin-left:3px}
 @media (max-width:480px){.btn-retour{padding:13px 16px;font-size:.9rem}.btn-suite{padding:14px 22px}}
+
+/* Cadenas : une molette pour le jour (1 à 31), une pour le mois (janvier à décembre) */
+.molettes{gap:12px;align-items:stretch}
+.molette{position:relative;padding-top:22px}
+.molette-lab{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.molette b{width:74px;font-size:2.1rem}
+.molette button{width:74px;height:40px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.molette.large b{width:min(170px,44vw);font-size:1.5rem;line-height:1.83;font-style:italic}
+.molette.large button{width:min(170px,44vw)}
+@media (max-width:480px){.rejouer{font-size:.68rem;padding:6px 11px}.points{gap:4px}.points i{width:8px;height:8px}}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -1104,12 +1114,12 @@ function rendre(){
 let quizIdx = 0, quizErreurs = 0, quizFini = false;
 let puzzleOrdre = null, puzzleSel = -1, puzzleFini = false, puzzleImg = "", puzzleCle = "";
 let bonsGagnes = [], roueAngle = 0, roueEnCours = false;
-let coffreChiffres = [0,0,0,0], coffreOuvert = false, coffreEssais = 0;
+let coffreJour = 1, coffreMois = 1, coffreOuvert = false, coffreEssais = 0;
 function reinitJeux(){
   quizIdx = 0; quizErreurs = 0; quizFini = false;
   puzzleOrdre = null; puzzleSel = -1; puzzleFini = false;
   bonsGagnes = []; roueAngle = 0; roueEnCours = false;
-  coffreChiffres = [0,0,0,0]; coffreOuvert = false; coffreEssais = 0;
+  coffreJour = 1; coffreMois = 1; coffreOuvert = false; coffreEssais = 0;
 }
 const quizValide = () => (S.quiz || []).filter(q => q && (q.q || "").trim() && (q.r || []).filter(x => (x || "").trim()).length >= 2 && ((q.r || [])[+q.ok] || "").trim());
 const bonsValides = () => (S.bons || []).map(b => (b || "").trim()).filter(Boolean);
@@ -1271,19 +1281,39 @@ function rendreCoffre(){
     z.innerHTML = `<div class="cadenas ouvert">${CADENAS_SVG}</div><div class="coffre-tresor"><span class="bon-lab">Ce que je gardais sous clé</span><p>${esc(S.coffre)}</p></div>`;
     return;
   }
+  const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  const indice = "Indice : le jour et le mois de notre rencontre.";
   z.innerHTML = `<div class="cadenas" id="cadenas">${CADENAS_SVG}</div>
-    <div class="molettes">${coffreChiffres.map((c,i)=>`${i === 2 ? '<span class="molette-sep" aria-hidden="true">/</span>' : ""}<div class="molette"><button type="button" class="haut" data-i="${i}" data-d="1" aria-label="Chiffre ${i+1} : augmenter"></button><b id="chiffre-${i}">${c}</b><button type="button" class="bas" data-i="${i}" data-d="-1" aria-label="Chiffre ${i+1} : diminuer"></button></div>`).join("")}</div>
-    <p class="astuce" id="coffre-msg">${coffreEssais >= 16 ? "Indice : le jour, puis le mois de notre rencontre. Par exemple 14 / 02." : "Le code ? Le jour et le mois où tout a commencé."}</p>`;
-  z.querySelectorAll(".molette button").forEach(b => b.onclick = () => {
-    const i = +b.dataset.i; coffreChiffres[i] = (coffreChiffres[i] + (+b.dataset.d) + 10) % 10; coffreEssais++;
-    const el = $("#chiffre-" + i); el.textContent = coffreChiffres[i]; el.classList.remove("tic"); void el.offsetWidth; el.classList.add("tic");
-    if (coffreEssais === 16) $("#coffre-msg").textContent = "Indice : le jour, puis le mois de notre rencontre. Par exemple 14 / 02.";
-    if (coffreChiffres.join("") === codeCoffre()){
+    <div class="molettes">
+      <div class="molette"><span class="molette-lab">Jour</span><button type="button" class="haut" data-c="j" data-d="1" aria-label="Jour suivant"></button><b id="mol-j">${coffreJour}</b><button type="button" class="bas" data-c="j" data-d="-1" aria-label="Jour précédent"></button></div>
+      <div class="molette large"><span class="molette-lab">Mois</span><button type="button" class="haut" data-c="m" data-d="1" aria-label="Mois suivant"></button><b id="mol-m">${MOIS[coffreMois-1]}</b><button type="button" class="bas" data-c="m" data-d="-1" aria-label="Mois précédent"></button></div>
+    </div>
+    <p class="astuce" id="coffre-msg">${coffreEssais >= 20 ? indice : "Le code ? La date où tout a commencé."}</p>`;
+  const d0 = new Date(S.date), bonJour = isNaN(d0) ? 14 : d0.getDate(), bonMois = isNaN(d0) ? 2 : d0.getMonth() + 1;
+  let ouvert = false, minuterie = null, repet = null;
+  const tourner = (c, d) => {
+    if (ouvert) return;
+    if (c === "j") coffreJour = (coffreJour - 1 + d + 31) % 31 + 1; else coffreMois = (coffreMois - 1 + d + 12) % 12 + 1;
+    coffreEssais++;
+    const el = $(c === "j" ? "#mol-j" : "#mol-m"); if (!el) return;
+    el.textContent = c === "j" ? coffreJour : MOIS[coffreMois-1];
+    el.classList.remove("tic"); void el.offsetWidth; el.classList.add("tic");
+    if (coffreEssais === 20) $("#coffre-msg").textContent = indice;
+    if (coffreJour === bonJour && coffreMois === bonMois){
+      ouvert = true; clearTimeout(minuterie); clearInterval(repet);
       z.querySelectorAll(".molette button").forEach(x => x.disabled = true);
       $("#cadenas").classList.add("ouvert");
       try{ navigator.vibrate && navigator.vibrate([30,50,80]); }catch(e){}
-      setTimeout(()=>{ coffreOuvert = true; const c = $("#cadenas"); if (c) eclat(...centre(c), 50, false, true); pluieDeCoeurs(.4); rendreCoffre(); }, reduit ? 0 : 900);
+      setTimeout(()=>{ coffreOuvert = true; const cd = $("#cadenas"); if (cd) eclat(...centre(cd), 50, false, true); pluieDeCoeurs(.4); rendreCoffre(); }, reduit ? 0 : 900);
     }
+  };
+  // un appui = un cran ; rester appuyé fait défiler
+  z.querySelectorAll(".molette button").forEach(b => {
+    const c = b.dataset.c, d = +b.dataset.d, stop = () => { clearTimeout(minuterie); clearInterval(repet); };
+    b.addEventListener("pointerdown", e => { e.preventDefault(); stop(); tourner(c, d); minuterie = setTimeout(()=>{ repet = setInterval(()=>tourner(c, d), 110); }, 380); });
+    ["pointerup","pointerleave","pointercancel"].forEach(ev => b.addEventListener(ev, stop));
+    b.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); tourner(c, d); } });
+    b.addEventListener("contextmenu", e => e.preventDefault());
   });
 }
 
