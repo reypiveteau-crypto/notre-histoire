@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Notre Constellation</title>
+<meta name="description" content="Un site cadeau personnalisé pour votre couple : vos souvenirs, vos photos, vos mots et des jeux à découvrir. Créez-le vous-même et offrez-le avec un simple lien.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Notre Constellation, le site cadeau pour votre couple">
+<meta property="og:description" content="Vos souvenirs, vos photos, vos mots et des jeux à découvrir. Créez-le vous-même et offrez-le avec un simple lien.">
+<meta property="og:url" content="https://reypiveteau-crypto.github.io/notre-histoire/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Karla:wght@400;500;700&family=Mrs+Saint+Delafield&display=swap">
@@ -587,6 +592,31 @@ body.cadeau .avis{display:none}
 .merci-choix > *{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;border:1px solid var(--line);background:var(--ink-3);color:var(--text);border-radius:14px;padding:8px 10px;font-size:.86rem;font-weight:500;text-decoration:none;line-height:1.25}
 .merci-choix > *:hover{border-color:var(--rose)}
 .merci-note{font-size:.78rem;color:var(--muted);margin:16px 0 0;line-height:1.45}
+
+/* « Comment ça marche ? » : étapes, questions, contact, pages légales */
+.infos-btn{position:fixed;right:16px;top:calc(12px + env(safe-area-inset-top,0px));z-index:30;background:var(--ink-2);color:var(--text);border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-size:.75rem;font-weight:700;letter-spacing:.04em}
+.infos-btn:hover{border-color:var(--rose)}
+body.cadeau .infos-btn{display:none}
+@media (max-width:420px){.infos-btn{top:calc(50px + env(safe-area-inset-top,0px))}}
+#infos{position:fixed;inset:0;z-index:51;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px;background:var(--ink);overflow-y:auto}
+#infos[hidden]{display:none}
+.infos-carte{position:relative;width:min(560px,100%);background:var(--ink-2);border:1px solid var(--line);border-radius:22px;padding:28px 22px;box-shadow:0 0 80px -20px var(--glow);margin:auto 0}
+.infos-carte h2{font-size:clamp(1.6rem,6vw,2.1rem);margin:.1em 0 .7em;text-align:center}
+.infos-carte h3{font-family:var(--f-body);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:26px 0 10px}
+.infos-fermer{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--ink-3);color:var(--text);font-size:1.2rem;line-height:1}
+.etapes{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:e}
+.etapes li{counter-increment:e;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:start;background:var(--ink-3);border-radius:16px;padding:14px 16px}
+.etapes li::before{content:counter(e);grid-row:span 2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);font-weight:700}
+.etapes b{font-size:1rem}
+.etapes span{color:var(--muted);font-size:.9rem;line-height:1.45}
+.infos-carte details{border-top:1px solid var(--line);padding:2px 0}
+.infos-carte summary{cursor:pointer;padding:12px 0;font-weight:700;font-size:.95rem}
+.infos-carte details p,.infos-carte details li{color:var(--muted);font-size:.9rem;line-height:1.55;margin:0 0 10px}
+.infos-carte details ul{margin:0 0 10px;padding-left:18px}
+.infos-carte a{color:var(--gold)}
+.infos-contact{color:var(--muted);font-size:.92rem;line-height:1.5;margin:0}
+.infos-go{display:block;width:100%;margin-top:24px;border:0;border-radius:99px;padding:15px;font-weight:700;font-size:1.02rem;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);text-align:center;text-decoration:none;box-shadow:0 10px 30px var(--glow)}
+.infos-carte a.infos-go{color:var(--on-rose)}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -651,6 +681,53 @@ body.cadeau .avis{display:none}
       <p class="merci-note">Perdu ? Vous pourrez le retrouver avec l'email de votre paiement, dans « Personnaliser ».</p>
     </div>
     <button class="merci-go" id="merci-retry" hidden>Réessayer</button>
+  </div>
+</div>
+<button class="infos-btn" id="infos-btn" type="button" aria-controls="infos">Comment ça marche ?</button>
+<div id="infos" hidden role="dialog" aria-label="Comment ça marche">
+  <div class="infos-carte">
+    <button class="infos-fermer" id="infos-fermer" type="button" aria-label="Fermer">×</button>
+    <p class="eyebrow" style="text-align:center">Notre Constellation</p>
+    <h2>Comment ça marche ?</h2>
+    <ol class="etapes">
+      <li><b>Vous payez en ligne</b><span>Paiement sécurisé par Stripe. Votre code d'accès s'affiche tout de suite après.</span></li>
+      <li><b>Vous créez votre site</b><span>Prénoms, souvenirs, photos, lettre, quiz, petits jeux : vous remplissez tout vous-même et vous voyez le résultat en direct.</span></li>
+      <li><b>Vous offrez le lien</b><span>Vous recevez un lien unique à envoyer par message à la personne que vous aimez.</span></li>
+    </ol>
+    <h3>Questions fréquentes</h3>
+    <details><summary>Combien de temps faut-il pour le créer ?</summary><p>Comptez quelques minutes pour une version simple. Vous pouvez prendre votre temps : votre brouillon reste enregistré sur votre appareil tant que vous n'avez pas créé le site.</p></details>
+    <details><summary>Le paiement est-il sécurisé ?</summary><p>Oui. Le paiement se fait sur la page de Stripe, un prestataire de paiement utilisé par des millions de boutiques. Nous ne voyons jamais votre numéro de carte.</p></details>
+    <details><summary>Puis-je essayer avant d'acheter ?</summary><p>Oui. Cliquez sur « Personnaliser » : vous pouvez tout remplir et voir le résultat gratuitement. Le code sert seulement à obtenir le lien à offrir.</p></details>
+    <details><summary>Puis-je modifier le site après l'avoir créé ?</summary><p>Non : un code crée un seul site, et il ne peut plus être modifié ensuite. Relisez bien et vérifiez l'aperçu avant de cliquer sur « Créer mon site ».</p></details>
+    <details><summary>Qui peut voir mon site ?</summary><p>Seulement les personnes qui ont le lien. Il n'apparaît dans aucune liste publique. Attention : toute personne à qui le lien est transmis peut l'ouvrir.</p></details>
+    <details><summary>Le lien reste-t-il valable longtemps ?</summary><p>Le lien n'a pas de date d'expiration : il reste accessible tant que le service existe.</p></details>
+    <details><summary>J'ai perdu mon code, que faire ?</summary><p>Ouvrez « Personnaliser », puis « Code perdu ? » et indiquez l'email utilisé lors du paiement.</p></details>
+    <h3>Une question, un souci ?</h3>
+    <p class="infos-contact">Écrivez-nous : <a id="infos-mail" href="mailto:contact.notreconstellation@gmail.com">contact.notreconstellation@gmail.com</a></p>
+    <div id="infos-legal" hidden>
+      <h3>Informations légales</h3>
+      <details><summary>Mentions légales</summary>
+        <p><b>Éditeur du site :</b> <span data-l="nom"></span>, entrepreneur individuel (micro-entreprise), SIRET <span data-l="siret"></span>, <span data-l="adresse"></span>. Contact : contact.notreconstellation@gmail.com.</p>
+        <p><b>Hébergement du site :</b> GitHub Pages, GitHub Inc., 88 Colin P. Kelly Jr Street, San Francisco, CA 94107, États-Unis.</p>
+        <p><b>Hébergement des données des sites créés :</b> Supabase Inc.</p>
+      </details>
+      <details><summary>Conditions générales de vente</summary>
+        <p><b>Produit.</b> Notre Constellation est un contenu numérique : un code d'accès permettant de créer un site cadeau personnalisé, accessible par un lien.</p>
+        <p><b>Prix.</b> Le prix est celui affiché sur le bouton d'achat au moment de la commande, en euros. <span data-l="tva"></span></p>
+        <p><b>Paiement.</b> Le paiement se fait en ligne par l'intermédiaire de Stripe.</p>
+        <p><b>Livraison.</b> Le code d'accès est affiché immédiatement après le paiement. Il est utilisable une seule fois.</p>
+        <p><b>Droit de rétractation.</b> Vous disposez de 14 jours pour vous rétracter tant que votre code n'a pas été utilisé : écrivez-nous et vous serez remboursé. En utilisant votre code pour créer votre site, vous demandez l'exécution immédiate du contenu numérique et vous renoncez à votre droit de rétractation (article L221-28 du Code de la consommation).</p>
+        <p><b>Contenus.</b> Vous êtes responsable des textes et des photos que vous ajoutez. Vous devez avoir le droit de les utiliser et l'accord des personnes qui y apparaissent. Les contenus illégaux peuvent être supprimés.</p>
+        <p><b>Problème ou réclamation.</b> Écrivez à contact.notreconstellation@gmail.com : nous répondons au plus vite. Vous bénéficiez des garanties légales prévues par le Code de la consommation.</p>
+      </details>
+      <details><summary>Données personnelles</summary>
+        <p>Nous conservons uniquement ce qui est nécessaire au service :</p>
+        <ul><li>l'email utilisé lors du paiement, pour retrouver votre code ;</li><li>les textes et les photos que vous ajoutez à votre site ;</li><li>votre avis, si vous en laissez un.</li></ul>
+        <p>Les données de paiement sont traitées par Stripe ; nous n'avons pas accès à votre numéro de carte. Nous n'utilisons pas de cookies publicitaires et nous ne revendons aucune donnée.</p>
+        <p>Vous pouvez demander l'accès, la rectification ou la suppression de vos données et de votre site en écrivant à contact.notreconstellation@gmail.com. Vous pouvez aussi adresser une réclamation à la CNIL (cnil.fr).</p>
+      </details>
+    </div>
+    <a class="infos-go" id="infos-go" target="_blank" rel="noopener">Offrir ce site</a>
   </div>
 </div>
 <div class="avis" id="avis" hidden aria-live="polite"><i class="ico-coeur" aria-hidden="true"></i><div><p id="avis-txt"></p><span id="avis-qui"></span></div><small>Avis de clients ayant acheté le site</small></div>
@@ -841,6 +918,23 @@ async function chargerCadeau(id){
 }
 
 /* ================= Code automatique après paiement ================= */
+
+/* Pages d'information. Les informations légales s'affichent quand LEGAL est rempli. */
+const LEGAL = { nom: "", siret: "", adresse: "", tva: "TVA non applicable, article 293 B du CGI." };
+(function(){
+  const g = id => document.getElementById(id), boite = g("infos");
+  if (!boite) return;
+  if (LEGAL.nom && LEGAL.siret){
+    boite.querySelectorAll("[data-l]").forEach(e => { e.textContent = LEGAL[e.dataset.l] || ""; });
+    g("infos-legal").hidden = false;
+  }
+  const ouvrir = () => { g("infos-go").href = g("acheter").href; boite.hidden = false; boite.scrollTop = 0; g("infos-fermer").focus(); };
+  const fermer = () => { boite.hidden = true; g("infos-btn").focus(); };
+  g("infos-btn").addEventListener("click", ouvrir);
+  g("infos-fermer").addEventListener("click", fermer);
+  g("infos-go").addEventListener("click", () => { boite.hidden = true; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !boite.hidden) fermer(); });
+})();
 async function fonctionPaiement(corps){
   const r = await fetch(`${SUPA_URL}/functions/v1/code-paiement`, {method:"POST", headers: entetes({"Content-Type":"application/json"}), body: JSON.stringify(corps)});
   let j = null; try { j = await r.json(); } catch(e){}
