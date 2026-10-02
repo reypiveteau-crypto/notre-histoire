@@ -550,6 +550,29 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
 .molette.large b{width:min(170px,44vw);font-size:1.5rem;line-height:1.83;font-style:italic}
 .molette.large button{width:min(170px,44vw)}
 @media (max-width:480px){.rejouer{font-size:.68rem;padding:6px 11px}.points{gap:4px}.points i{width:8px;height:8px}}
+
+/* Avis clients, au-dessus du bouton d'achat (vitrine seulement) */
+.avis{position:fixed;left:16px;bottom:calc(112px + env(safe-area-inset-bottom,0px));z-index:30;width:340px;max-width:calc(100% - 32px);display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start;background:var(--ink-2);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.avis > .ico-coeur{color:var(--rose);font-size:1.1rem;margin-top:2px}
+.avis p{margin:0;font-family:var(--f-display);font-style:italic;font-size:.98rem;line-height:1.35;color:var(--text)}
+.avis span{display:block;margin-top:3px;font-size:.74rem;font-weight:700;color:var(--gold);letter-spacing:.04em}
+.avis small{grid-column:1 / -1;font-size:.62rem;color:var(--muted);letter-spacing:.03em}
+.avis.change p,.avis.change span{animation:monte .6s ease-out}
+body.cadeau .avis{display:none}
+@media (max-width:480px){
+  .avis{right:16px;width:auto;max-width:none;bottom:calc(116px + env(safe-area-inset-bottom,0px));padding:10px 12px}
+  .avis p{font-size:.9rem}
+  body.avec-avis .ouvrir-edit{bottom:calc(206px + env(safe-area-inset-bottom,0px))}
+  body.avec-avis:not(.cadeau).chapitres #site > section.actif{padding-bottom:calc(290px + env(safe-area-inset-bottom,0px))}
+}
+
+/* Formulaire d'avis dans l'éditeur */
+.avis-form{border-top:1px solid #eadfe2;padding-top:6px}
+.avis-form summary{cursor:pointer;font-size:.85rem;font-weight:700;color:#b0405f;padding:6px 0;list-style:none}
+.avis-form summary::-webkit-details-marker{display:none}
+.avis-form[open] summary{margin-bottom:6px}
+.avis-form .champ{margin-bottom:8px}
+.ed-pied{max-height:70vh;overflow-y:auto}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -596,6 +619,7 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
 
 <button class="rejouer" id="rejouer" aria-label="Rejouer l'ouverture">✦ Rejouer l'ouverture</button>
 
+<div class="avis" id="avis" hidden aria-live="polite"><i class="ico-coeur" aria-hidden="true"></i><div><p id="avis-txt"></p><span id="avis-qui"></span></div><small>Avis de clients ayant acheté le site</small></div>
 <a class="acheter" id="acheter" href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
 <button class="ouvrir-edit" id="btn-edit" aria-controls="editeur">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -619,6 +643,14 @@ body.cadeau .ouvrir-edit,body.cadeau .acheter{display:none}
       <button id="voir-ouv">Voir l'ouverture</button>
       <button id="reinit">Tout effacer</button>
     </div>
+    <details class="avis-form" id="avis-form">
+      <summary>Déjà client ? Laisser un avis</summary>
+      <div class="champ"><label for="a-code">Votre code d'accès</label><input id="a-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+      <div class="champ"><label for="a-prenom">Votre prénom</label><input id="a-prenom" maxlength="30"></div>
+      <div class="champ"><label for="a-texte">Votre avis (sa réaction, ce que vous en avez pensé)</label><textarea id="a-texte" rows="2" maxlength="200"></textarea></div>
+      <button class="principal" id="a-envoyer">Envoyer mon avis</button>
+      <p class="note" id="a-etat" role="status"></p>
+    </details>
     <p class="note" id="reinit-conf" hidden>Cliquez encore sur « Tout effacer » pour confirmer.</p>
   </div>
 </aside>
@@ -693,6 +725,33 @@ function sauver(){
   catch(e){
     try { localStorage.setItem("constellation-brouillon-v2", JSON.stringify({...S, photos:S.photos.map(p=>({src:"",legende:p.legende}))})); } catch(e2){}
   }
+}
+
+/* ================= Avis clients (vitrine uniquement) =================
+   Uniquement de VRAIS avis, avec l'accord du client. Exemple de ligne :
+   {texte:"Il a pleuré en ouvrant le lien.", prenom:"Inès", date:"octobre 2026"},  */
+const AVIS = [
+];
+async function lancerAvis(){
+  const bloc = document.getElementById("avis");
+  if (!bloc || document.body.classList.contains("cadeau")) return;
+  let liste = AVIS.slice();
+  try {
+    if (supaOK()){
+      const recus = await rpc("lire_avis", {});
+      if (Array.isArray(recus)) liste = recus.map(a => ({texte: a.texte, prenom: a.prenom, date: a.date ? new Date(a.date).toLocaleDateString("fr-FR", {month:"long", year:"numeric"}) : ""})).concat(liste);
+    }
+  } catch(e){}
+  if (!liste.length || document.body.classList.contains("cadeau")) return;
+  let k = 0;
+  const montrer = () => {
+    const a = liste[k % liste.length]; k++;
+    bloc.classList.remove("change"); void bloc.offsetWidth; bloc.classList.add("change");
+    document.getElementById("avis-txt").textContent = "« " + a.texte + " »";
+    document.getElementById("avis-qui").textContent = a.prenom + (a.date ? " · " + a.date : "");
+  };
+  bloc.hidden = false; document.body.classList.add("avec-avis"); montrer();
+  if (liste.length > 1) setInterval(montrer, 5500);
 }
 
 /* ================= Prix de lancement (date réelle de fin) ================= */
@@ -2004,11 +2063,32 @@ $("#gen-lien").onclick = async ()=>{
     const lien = location.href.split("#")[0] + "#" + id;
     $("#lien-sortie").value = lien; $("#voir-site").href = lien;
     $("#commande").hidden = false; btn.hidden = true; etat.textContent = "";
-    try { localStorage.setItem("constellation-dernier-lien", lien); } catch(e){}
+    try { localStorage.setItem("constellation-dernier-lien", lien); localStorage.setItem("constellation-dernier-code", code); } catch(e){}
+    $("#a-code").value = code; if (!$("#a-prenom").value) $("#a-prenom").value = S.de || "";
     pluieDeCoeurs(.6);
   } catch(e){
     const m = String(e && e.message || "");
     etat.textContent = /code_invalide/.test(m) ? "Ce code vient déjà d'être utilisé." : "La création n'a pas marché. Vérifiez votre connexion internet et réessayez. Si ça bloque encore, contactez la personne qui vous a donné le code.";
+  } finally { btn.disabled = false; }
+};
+try { const c = localStorage.getItem("constellation-dernier-code"); if (c) $("#a-code").value = c; } catch(e){}
+$("#a-envoyer").onclick = async () => {
+  const etat = $("#a-etat"), btn = $("#a-envoyer");
+  const code = $("#a-code").value.trim().toUpperCase(), prenom = $("#a-prenom").value.trim(), texte = $("#a-texte").value.trim();
+  if (!supaOK()){ etat.textContent = "Les avis ne sont pas encore activés sur ce site."; return; }
+  if (!code){ etat.textContent = "Entrez le code d'accès que vous avez utilisé pour créer votre site."; $("#a-code").focus(); return; }
+  if (!prenom){ etat.textContent = "Indiquez votre prénom."; $("#a-prenom").focus(); return; }
+  if (texte.length < 5){ etat.textContent = "Écrivez au moins quelques mots."; $("#a-texte").focus(); return; }
+  btn.disabled = true; etat.textContent = "Envoi…";
+  try {
+    await rpc("laisser_avis", {p_code: code, p_prenom: prenom, p_texte: texte});
+    etat.textContent = "Merci ! Votre avis est en ligne sur la page d'accueil.";
+    $("#a-texte").value = ""; pluieDeCoeurs(.3);
+  } catch(e){
+    const m = String(e && e.message || "");
+    etat.textContent = /code_invalide/.test(m) ? "Ce code n'a pas encore servi à créer un site. Seuls les clients peuvent laisser un avis."
+      : /avis_invalide/.test(m) ? "Votre avis doit faire entre 5 et 200 caractères."
+      : "L'envoi n'a pas marché. Vérifiez votre connexion et réessayez.";
   } finally { btn.disabled = false; }
 };
 $("#copier-code").onclick = async ()=>{
@@ -2040,6 +2120,7 @@ if (idCadeau){
 rendre();
 construireEditeur();
 majLancement();
+lancerAvis();
 if (!idCadeau) ouverture();
 tailleCiel();
 coulE = couleurEtoile();
