@@ -573,6 +573,20 @@ body.cadeau .avis{display:none}
 .avis-form[open] summary{margin-bottom:6px}
 .avis-form .champ{margin-bottom:8px}
 .ed-pied{max-height:70vh;overflow-y:auto}
+
+/* Écran après paiement : « voici votre code » */
+#merci{position:fixed;inset:0;z-index:52;display:flex;align-items:center;justify-content:center;padding:20px 16px;background:var(--ink);overflow-y:auto}
+.merci-carte{width:min(440px,100%);text-align:center;background:var(--ink-2);border:1px solid var(--line);border-radius:22px;padding:28px 22px;box-shadow:0 0 80px -20px var(--glow)}
+.merci-carte h2{font-size:clamp(1.6rem,6vw,2.1rem);margin:.2em 0 .6em}
+.merci-code{font-family:var(--f-body);font-weight:700;font-size:clamp(1.35rem,6.4vw,2.2rem);letter-spacing:.07em;white-space:nowrap;padding:16px 10px;border-radius:14px;border:2px dashed var(--gold);color:var(--gold);background:var(--ink);font-variant-numeric:tabular-nums;user-select:all;-webkit-user-select:all}
+.merci-code.pret{animation:allume .7s ease-out}
+.merci-txt{color:var(--muted);font-size:.95rem;margin:14px 0 18px}
+.merci-go{width:100%;border:0;border-radius:99px;padding:16px;font-weight:700;font-size:1.05rem;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);box-shadow:0 10px 30px var(--glow)}
+.merci-sous{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:22px 0 10px}
+.merci-choix{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.merci-choix > *{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;border:1px solid var(--line);background:var(--ink-3);color:var(--text);border-radius:14px;padding:8px 10px;font-size:.86rem;font-weight:500;text-decoration:none;line-height:1.25}
+.merci-choix > *:hover{border-color:var(--rose)}
+.merci-note{font-size:.78rem;color:var(--muted);margin:16px 0 0;line-height:1.45}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -619,8 +633,28 @@ body.cadeau .avis{display:none}
 
 <button class="rejouer" id="rejouer" aria-label="Rejouer l'ouverture">✦ Rejouer l'ouverture</button>
 
+<div id="merci" hidden role="dialog" aria-label="Votre code d'accès">
+  <div class="merci-carte">
+    <p class="eyebrow" id="merci-etape">Paiement reçu</p>
+    <h2 id="merci-titre">Un instant…</h2>
+    <div class="merci-code" id="merci-code" aria-live="polite">·····</div>
+    <p class="merci-txt" id="merci-txt">Nous préparons votre code d'accès.</p>
+    <div id="merci-actions" hidden>
+      <button class="merci-go" id="merci-go">Créer mon site maintenant</button>
+      <p class="merci-sous">Ou gardez votre code pour plus tard :</p>
+      <div class="merci-choix">
+        <button type="button" id="m-copier">Copier le code</button>
+        <a id="m-wa" target="_blank" rel="noopener">Me l'envoyer sur WhatsApp</a>
+        <a id="m-sms">Me l'envoyer par SMS</a>
+        <a id="m-mail">Me l'envoyer par email</a>
+      </div>
+      <p class="merci-note">Perdu ? Vous pourrez le retrouver avec l'email de votre paiement, dans « Personnaliser ».</p>
+    </div>
+    <button class="merci-go" id="merci-retry" hidden>Réessayer</button>
+  </div>
+</div>
 <div class="avis" id="avis" hidden aria-live="polite"><i class="ico-coeur" aria-hidden="true"></i><div><p id="avis-txt"></p><span id="avis-qui"></span></div><small>Avis de clients ayant acheté le site</small></div>
-<a class="acheter" id="acheter" href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
+<a class="acheter" id="acheter" href="https://buy.stripe.com/test_bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
 <button class="ouvrir-edit" id="btn-edit" aria-controls="editeur">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
   Personnaliser
@@ -630,9 +664,15 @@ body.cadeau .avis{display:none}
   <div class="ed-tete"><h2>Votre site</h2><button id="fermer-edit" aria-label="Fermer">×</button></div>
   <div class="ed-corps" id="ed-corps"></div>
   <div class="ed-pied">
-    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_aFafZi8xe8571149e60x200" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (l'offre de lancement se termine bientôt, le prix passera à 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
+    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (l'offre de lancement se termine bientôt, le prix passera à 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
     <div class="champ" style="margin:0"><label for="f-code">Votre code d'accès (reçu après paiement)</label><input id="f-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
     <button class="principal" id="gen-lien">Créer mon site</button>
+    <details class="avis-form" id="perdu-form">
+      <summary>Code perdu ? Le retrouver avec votre email</summary>
+      <div class="champ"><label for="perdu-email">L'email utilisé pour le paiement</label><input id="perdu-email" type="email" autocomplete="email" placeholder="vous@exemple.fr"></div>
+      <button class="principal" id="perdu-go">Retrouver mon code</button>
+      <div class="note" id="perdu-res" role="status"></div>
+    </details>
     <p class="note" id="etat-creation" role="status"></p>
     <div id="commande" hidden>
       <p class="note"><strong>C'est prêt !</strong> Voici le lien à offrir. Gardez-le précieusement.</p>
@@ -798,6 +838,52 @@ async function chargerCadeau(id){
   const r = await fetch("cadeaux/" + id + ".json", {cache:"no-store"});
   if (!r.ok) throw new Error("introuvable");
   return r.json();
+}
+
+/* ================= Code automatique après paiement ================= */
+async function fonctionPaiement(corps){
+  const r = await fetch(`${SUPA_URL}/functions/v1/code-paiement`, {method:"POST", headers: entetes({"Content-Type":"application/json"}), body: JSON.stringify(corps)});
+  let j = null; try { j = await r.json(); } catch(e){}
+  if (!r.ok) throw new Error((j && j.erreur) || String(r.status));
+  return j;
+}
+const URL_VITRINE = location.origin + location.pathname;
+async function afficherMerci(session){
+  const m = document.getElementById("merci"), q = id => document.getElementById(id);
+  q("ouverture").hidden = true; lancerCompte();
+  m.hidden = false; q("merci-retry").hidden = true; q("merci-actions").hidden = true;
+  q("merci-etape").textContent = "Paiement reçu"; q("merci-titre").textContent = "Un instant…";
+  q("merci-code").textContent = "·····"; q("merci-code").classList.remove("pret");
+  q("merci-txt").textContent = "Nous préparons votre code d'accès.";
+  try {
+    const rep = await fonctionPaiement({session_id: session});
+    const code = rep.code, mail = rep.email || "";
+    try { localStorage.setItem("constellation-code-achete", code); } catch(e){}
+    const texte = "Mon code Notre Constellation : " + code + "\nPour créer mon site : " + URL_VITRINE;
+    q("merci-titre").textContent = "Merci ! Voici votre code";
+    q("merci-code").textContent = code; q("merci-code").classList.add("pret");
+    q("merci-txt").textContent = "Il sert à créer votre site cadeau. Il ne marche qu'une seule fois.";
+    q("m-wa").href = "https://wa.me/?text=" + encodeURIComponent(texte);
+    q("m-sms").href = "sms:?&body=" + encodeURIComponent(texte);
+    q("m-mail").href = "mailto:" + encodeURIComponent(mail) + "?subject=" + encodeURIComponent("Mon code Notre Constellation") + "&body=" + encodeURIComponent(texte);
+    q("m-copier").onclick = async () => { try { await navigator.clipboard.writeText(code); toast("Code copié"); } catch(e){ toast("Votre code : " + code); } };
+    q("merci-go").onclick = () => {
+      m.hidden = true; try { history.replaceState(null, "", location.pathname); } catch(e){}
+      document.getElementById("btn-edit").click();
+      const champ = document.getElementById("f-code"); champ.value = code;
+      toast("Votre code est déjà rempli. Personnalisez, puis « Créer mon site ».");
+    };
+    q("merci-actions").hidden = false;
+    pluieDeCoeurs(.6);
+  } catch(e){
+    const err = String(e && e.message || "");
+    q("merci-etape").textContent = "Petit souci";
+    q("merci-titre").textContent = err === "non_paye" ? "Paiement non confirmé" : "Code pas encore prêt";
+    q("merci-txt").textContent = err === "non_paye"
+      ? "Votre paiement n'apparaît pas encore comme validé. Attendez une minute puis réessayez."
+      : "Nous n'arrivons pas à récupérer votre code pour l'instant. Pas d'inquiétude : votre paiement est enregistré. Réessayez dans un instant.";
+    q("merci-retry").hidden = false; q("merci-retry").onclick = () => afficherMerci(session);
+  }
 }
 
 /* ================= Rendu du site ================= */
@@ -2121,7 +2207,22 @@ rendre();
 construireEditeur();
 majLancement();
 lancerAvis();
-if (!idCadeau) ouverture();
+const sessionPaiement = new URLSearchParams(location.search).get("session_id");
+if (!idCadeau){ if (sessionPaiement) afficherMerci(sessionPaiement); else ouverture(); }
+try { const ca = localStorage.getItem("constellation-code-achete"); if (ca && !$("#f-code").value) $("#f-code").value = ca; } catch(e){}
+$("#perdu-go").onclick = async () => {
+  const res = $("#perdu-res"), mail = $("#perdu-email").value.trim();
+  if (!/.+@.+\..+/.test(mail)){ res.textContent = "Entrez l'adresse email utilisée lors du paiement."; return; }
+  res.textContent = "Recherche…";
+  try {
+    const rep = await fonctionPaiement({email: mail});
+    if (!rep.codes || !rep.codes.length){ res.textContent = "Aucun achat trouvé avec cette adresse. Vérifiez l'orthographe, ou essayez une autre adresse."; return; }
+    res.innerHTML = rep.codes.map(c => c.cadeau_id
+      ? `<p style="margin:6px 0"><strong>${esc(c.code)}</strong> : site déjà créé. <a href="${URL_VITRINE}#${esc(c.cadeau_id)}" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Ouvrir mon site</a></p>`
+      : `<p style="margin:6px 0"><strong>${esc(c.code)}</strong> : prêt à être utilisé.</p>`).join("");
+    const libre = rep.codes.find(c => !c.cadeau_id); if (libre) $("#f-code").value = libre.code;
+  } catch(e){ res.textContent = "La recherche n'a pas marché. Vérifiez votre connexion et réessayez."; }
+};
 tailleCiel();
 coulE = couleurEtoile();
 requestAnimationFrame(dessinerCiel);
