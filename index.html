@@ -656,6 +656,41 @@ body.amb-noel{
 .infos-ex{display:flex;flex-wrap:wrap;gap:8px}
 .infos-ex button{border:1px solid var(--line);background:var(--ink-3);color:var(--text);border-radius:99px;padding:9px 14px;font-size:.88rem;font-weight:700}
 .infos-ex button:hover{border-color:var(--rose)}
+
+/* Anniversaire : le gâteau et ses bougies */
+.gateau{position:relative;width:min(300px,82%);margin:34px auto 0;padding-top:78px}
+.g-bougies{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;gap:clamp(2px,2.5vw,12px)}
+.bougie{position:relative;width:40px;height:80px;border:0;background:none;padding:0;cursor:pointer}
+.bougie .cire{position:absolute;left:50%;bottom:0;width:11px;height:46px;margin-left:-5.5px;border-radius:3px;background:repeating-linear-gradient(135deg,var(--star) 0 6px,var(--rose) 6px 12px)}
+.bougie .flamme{position:absolute;left:50%;bottom:48px;width:15px;height:24px;margin-left:-7.5px;border-radius:50%/62% 62% 38% 38%;background:radial-gradient(ellipse at 50% 72%,#fff7cc,#ffb23e 55%,#ff6a2b);box-shadow:0 0 20px 7px rgba(255,170,60,.5);transform-origin:50% 100%;animation:flamme .8s ease-in-out infinite alternate}
+.bougie.eteinte{cursor:default}
+.bougie.eteinte .flamme{display:none}
+.bougie .fumee{display:none;position:absolute;left:50%;bottom:50px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--muted);opacity:0}
+.bougie.eteinte.juste .fumee{display:block;animation:fumee 1.3s ease-out forwards}
+@keyframes flamme{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.08,1.16) rotate(3deg)}}
+@keyframes fumee{0%{opacity:.7;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-38px) scale(2.6)}}
+.g-etage{position:relative;margin:0 auto;border-radius:14px 14px 6px 6px;background:linear-gradient(var(--rose),var(--rouge));box-shadow:0 14px 40px -12px var(--glow)}
+.g-etage::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;border-radius:14px 14px 0 0;background:radial-gradient(circle at 11px 0,var(--star) 11px,transparent 12px) 0 4px/22px 16px repeat-x,linear-gradient(var(--star),var(--star)) 0 0/100% 5px no-repeat}
+.g-etage.haut{width:70%;height:54px}
+.g-etage.bas{width:100%;height:66px;border-radius:10px 10px 8px 8px}
+.g-plat{height:10px;border-radius:99px;background:var(--gold);margin:0 -14px}
+#gateau-zone .encore,#avent-zone .encore{text-align:center}
+#gateau-zone .astuce,#avent-zone .astuce{text-align:center}
+/* Noël : petit calendrier de l'Avent */
+.avent{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,44%),1fr));gap:12px;max-width:620px;margin:30px auto 0}
+.case-a{position:relative;min-height:112px;border-radius:14px;border:1px dashed var(--gold);background:var(--ink-2);color:var(--text);padding:12px;display:grid;place-items:center;text-align:center;font:inherit;cursor:pointer;transition:transform .3s,background .4s}
+.case-a:hover{transform:translateY(-2px)}
+.case-a .num{font-family:var(--f-display);font-size:2.3rem;color:var(--gold);line-height:1}
+.case-a .txt{font-size:.92rem;line-height:1.35}
+.case-a.ouverte{cursor:default;border-style:solid;background:linear-gradient(160deg,var(--ink-3),var(--ink-2));animation:monte .5s ease-out}
+.case-a.ouverte::after{content:attr(data-n);position:absolute;right:9px;top:6px;font-size:.7rem;font-weight:700;color:var(--gold)}
+
+/* Motif selon le thème : étoile à la place du cœur (Noël, Ami·e, Anniversaire) */
+body.motif-etoile{--coeur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/%3E%3C/svg%3E")}
+.depart{font-family:var(--f-display);font-style:italic;color:var(--muted);font-size:clamp(1rem,3.4vw,1.25rem);margin:.2em 0 0}
+.filante svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);overflow:visible;filter:drop-shadow(0 0 10px var(--gold))}
+.filante .traineau{width:150px;height:64px;color:var(--gold)}
+.filante .ballon{width:54px;height:96px}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -964,16 +999,24 @@ const occ = () => TXT[S.occasion] ? S.occasion : "couple";
 const tx = k => TXT[occ()][k];
 const noel = () => S.ambiance === "noel";
 
+/* Motif visuel du site : dépend du thème (Noël) puis de l'occasion */
+const motif = () => noel() ? "noel" : occ() === "anniv" ? "anniv" : occ() === "ami" ? "ami" : occ() === "famille" ? "famille" : "couple";
+const enEtoile = () => { const m = motif(); return m === "noel" || m === "ami" || m === "anniv"; };
+const nomSeul = () => { const m = motif(); return m === "noel" || m === "anniv" || m === "famille"; };
+const tm = (defaut, o) => (o && o[motif()]) || defaut;
+const deLaPart = n => { n = (n || "").trim(); return (/^[aeiouhàâäéèêëîïôöùûü]/i.test(n) ? "d'" : "de ") + n; };
+const nomsTitre = () => nomSeul() ? S.pour : S.pour + " & " + S.de;
+
 let S = clone(EXEMPLE);
-try { const q = new URLSearchParams(location.search), p = q.get("pour"); if (p && EXEMPLES[p]) S = clone(EXEMPLES[p]); if (q.get("theme") === "noel") S.ambiance = "noel"; } catch(e){}
+try { const q = new URLSearchParams(location.search), p = q.get("pour"); if (p && EXEMPLES[p]) S = clone(EXEMPLES[p]); if (q.get("theme") === "noel"){ S.ambiance = "noel"; S.avent = ["Un chocolat chaud, préparé par moi","Une soirée film de Noël, c'est toi qui choisis","Une balade pour voir les illuminations","Un câlin sous le plaid","Un petit-déjeuner au lit","Ton vrai cadeau t'attend sous le sapin"]; } } catch(e){}
 /* L'exemple est-il encore intact ? (le client n'a rien écrit) */
 function exempleIntact(){
-  const e = EXEMPLES[occ()], cles = Object.keys(e).filter(k => k !== "musique" && k !== "ambiance").sort();
+  const e = EXEMPLES[occ()], cles = Object.keys(e).filter(k => k !== "musique" && k !== "ambiance" && k !== "avent").sort();
   return JSON.stringify(cles.map(k => S[k])) === JSON.stringify(cles.map(k => e[k]));
 }
 function changerOccasion(o){
   if (!EXEMPLES[o] || o === occ()) return;
-  if (exempleIntact()){ const m = S.musique, n = noel(); S = clone(EXEMPLES[o]); S.musique = m; if (n) S.ambiance = "noel"; toast("Exemple « " + TXT[o].nom + " » chargé. À vous de le personnaliser."); }
+  if (exempleIntact()){ const m = S.musique, n = noel(); const av = S.avent; S = clone(EXEMPLES[o]); S.musique = m; if (n){ S.ambiance = "noel"; S.avent = av; } toast("Exemple « " + TXT[o].nom + " » chargé. À vous de le personnaliser."); }
   else { S.occasion = o; toast("Vos textes sont gardés. Les titres du site s'adaptent."); }
   souvActif = 0; reinitSurprises(); construireEditeur(); rendre(); sauver(); coulE = couleurEtoile(); if (reduit) dessinerCiel(0);
 }
@@ -1093,7 +1136,7 @@ const LEGAL = { nom: "", siret: "", adresse: "", tva: "TVA non applicable, artic
   g("infos-go").addEventListener("click", () => { boite.hidden = true; });
   boite.querySelectorAll("[data-ex]").forEach(b => b.addEventListener("click", () => {
     if (brouillonCharge){ toast("Fermez « Personnaliser » et rechargez la page pour revoir les exemples."); return; }
-    const x = b.dataset.ex; S = clone(x === "noel" ? EXEMPLE : EXEMPLES[x]); if (x === "noel") S.ambiance = "noel";
+    const x = b.dataset.ex; S = clone(x === "noel" ? EXEMPLE : EXEMPLES[x]); if (x === "noel"){ S.ambiance = "noel"; S.avent = AVENT_DEFAUT.slice(); }
     boite.hidden = true; souvActif = 0; coulE = couleurEtoile(); ouverture();
   }));
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !boite.hidden) fermer(); });
@@ -1156,7 +1199,16 @@ function dateLisible(iso){
 // Positions des étoiles : une courbe douce, stable quel que soit le nombre de souvenirs
 // Les étoiles sont posées sur une courbe en cœur : on ne le découvre qu'une fois toutes allumées
 function ratioCarte(){ return innerWidth < 640 ? .8 : 2; }
+
+function pointEtoile(t){
+  const H = 100/ratioCarte(), R = Math.min(39, H*.43), r = R*.45;
+  const u = (((t/(2*Math.PI)) % 1) + 1) % 1 * 10, i = Math.floor(u) % 10, f = u - Math.floor(u);
+  const v = k => { const a = -Math.PI/2 + k*Math.PI/5, d = k % 2 ? r : R; return [Math.cos(a)*d, Math.sin(a)*d]; };
+  const p = v(i), q = v((i+1) % 10);
+  return {x: 50 + p[0] + (q[0]-p[0])*f, y: (H/2 + p[1] + (q[1]-p[1])*f + R*.07)/H*100};
+}
 function pointCoeur(t){
+  if (enEtoile()) return pointEtoile(t);
   const H = 100/ratioCarte(), k = Math.min(80/32, H*.74/29);
   const X = 16*Math.pow(Math.sin(t),3), Y = -(13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
   return {x: 50 + X*k, y: (H/2 + (Y - 2.5)*k)/H*100};
@@ -1165,7 +1217,7 @@ function pointCoeur(t){
 const cacheT = {};
 function tEtoile(i,n){
   if (n < 2) return Math.PI;
-  const cle = n + ":" + ratioCarte();
+  const cle = n + ":" + ratioCarte() + ":" + enEtoile();
   if (!cacheT[cle]){
     // répartition à distance égale le long du cœur (sinon les étoiles se tassent près de la pointe)
     const a = .95, b = 2*Math.PI - .95, N = 600, ts = [], L = [0];
@@ -1182,6 +1234,23 @@ function positions(n){
 }
 const COEUR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 const COEUR_MEDAILLON = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rose)" stop-opacity=".35"/><stop offset="1" stop-color="var(--rouge)" stop-opacity=".12"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gm)"/><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" class="contour"/></svg>';
+
+const ETOILE_D = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
+const icone = () => enEtoile() ? COEUR_SVG.split("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z").join(ETOILE_D) : COEUR_SVG;
+const medaillon = () => enEtoile() ? COEUR_MEDAILLON.split("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z").join(ETOILE_D) : COEUR_MEDAILLON;
+function filanteHtml(){
+  const m = motif();
+  if (m === "noel") return `<svg class="traineau" viewBox="0 0 150 64" aria-hidden="true" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 30h32q7 0 7 8v6H20q-8 0-8-8z" stroke="none"/><path d="M8 52q-5-6 3-9M10 52h46q9 0 9-9" fill="none" stroke-width="2.5"/>
+    <circle cx="24" cy="24" r="8" stroke="none" opacity=".75"/><ellipse cx="38" cy="26" rx="8" ry="7" fill="#e23b4a" stroke="none"/><circle cx="40" cy="15" r="5" fill="#ffe2cc" stroke="none"/><path d="M34 13h12l4-9z" fill="#e23b4a" stroke="none"/><circle cx="50" cy="4" r="2" fill="#fff" stroke="none"/>
+    <path d="M56 34L96 32" fill="none" stroke-width="1.5"/>
+    <ellipse cx="108" cy="32" rx="15" ry="7.5" stroke="none"/><path d="M119 28l8-11" fill="none" stroke-width="6"/><ellipse cx="131" cy="15" rx="7" ry="4.5" stroke="none"/>
+    <path d="M127 11l-3-9M125 5l-5-2M130 11l3-9M132 5l5-2" fill="none" stroke-width="1.8"/>
+    <path d="M98 36l-9 13M103 38l-3 14M114 38l5 13M119 35l11 8M93 31l-5-3" fill="none" stroke-width="2.6"/>
+    <circle cx="138" cy="15" r="2.6" fill="#ff3b3b" stroke="none"/></svg>`;
+  if (m === "anniv") return `<svg class="ballon" viewBox="0 0 54 96" aria-hidden="true"><path d="M27 52q-6 10 2 20t-2 22" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="27" cy="26" rx="21" ry="25" fill="var(--rose)"/><path d="M23 50h8l-4 5z" fill="var(--rouge)"/><ellipse cx="19" cy="16" rx="5" ry="8" fill="#fff" opacity=".35" transform="rotate(-20 19 16)"/></svg>`;
+  return "<i></i>";
+}
 let segDebut = {}, ondes = [], completeDebut = 0, carteRAF = 0;
 function lancerCarte(){
   cancelAnimationFrame(carteRAF);
@@ -1353,6 +1422,7 @@ document.getElementById("son").addEventListener("click", e => { e.stopPropagatio
 function rendre(){
   musique.sync();
   document.body.classList.remove("amb-aube","amb-braise","amb-passion","amb-noel");
+  document.body.classList.toggle("motif-etoile", enEtoile());
   if (S.ambiance && S.ambiance !== "nuit") document.body.classList.add("amb-" + S.ambiance);
   clearInterval(tapeur); cancelAnimationFrame(filanteRAF);
 
@@ -1366,10 +1436,11 @@ function rendre(){
     const dx = pts[i].x - 50, dy = (pts[i].y - 50) / ratioCarte();
     // Haut du cœur : étiquette vers l'intérieur. Bas (pointe) : vers l'extérieur, où il y a de la place.
     const dedans = dx > 0 ? "lab-g" : "lab-d", dehors = dx > 0 ? "lab-d" : "lab-g";
-    const lab = dy <= 0 ? (Math.abs(dx) > Math.abs(dy) * 1.1 ? dedans : "lab-h")
+    const Rr = Math.min(39, 100/ratioCarte()*.43);
+    const lab = enEtoile() ? (dy <= 2 ? "lab-h" : (Math.abs(dx) < 4 || dy > Rr*.6) ? "lab-b" : dehors) : dy <= 0 ? (Math.abs(dx) > Math.abs(dy) * 1.1 ? dedans : "lab-h")
               : (Math.abs(dx) < 2 ? "lab-h" : Math.abs(dx) < 22 ? dehors : dedans);
     return `<button class="etoile ${lab}${on?"":" eteinte"}${i===suivante?" suivante":""}${on&&i===souvActif?" on":""}${i===juste?" juste":""}" data-i="${i}" style="left:${pts[i].x}%;top:${pts[i].y}%" aria-label="${on?"Souvenir "+(i+1)+" : "+esc(s.titre):"Étoile éteinte, touche pour l'allumer"}">
-      <i>${on ? COEUR_SVG : ""}</i><small>${on ? esc(s.date || "Souvenir "+(i+1)) : "✦"}</small>
+      <i>${on ? icone() : ""}</i><small>${on ? esc(s.date || "Souvenir "+(i+1)) : "✦"}</small>
     </button>`;}).join("");
   const nbOn = [...allumees].filter(i=>i<souv.length).length;
   const sa = souv[souvActif];
@@ -1381,14 +1452,14 @@ function rendre(){
     const d = devs.has(i);
     return `<button class="pola${d?"":" cache"}" data-p="${i}" style="--k:${i}" aria-label="${d?esc(p.legende||"Photo"):"Photo pas encore développée, touche pour la développer"}">
       <span class="scotch"></span>${p.src ? `<span class="img" style="background-image:url('${p.src}')"></span>`
-              : `<span class="img vide"><span>${esc(S.pour.charAt(0))} &amp; ${esc(S.de.charAt(0))}</span></span>`}
+              : `<span class="img vide"><span>${nomSeul() ? esc(S.pour.charAt(0)) : esc(S.pour.charAt(0)) + " &amp; " + esc(S.de.charAt(0))}</span></span>`}
       <span class="flash"></span><span class="leg">${d ? esc(p.legende) : `<em>Touche pour développer</em>`}</span>
     </button>`;}).join("");
 
   const raisons = S.raisons.map((r,i)=>`
     <button class="carte-r${rets.has(i)?" ret":""}" data-r="${i}" style="--k:${i}" aria-label="Raison ${i+1}, retourner la carte">
       <span class="in">
-        <span class="face av"><i class="coin h ico-coeur"></i><span class="medaillon">${COEUR_MEDAILLON}<b>${i+1}</b></span><span class="retourne">Retourne-moi</span><i class="coin b ico-coeur"></i></span>
+        <span class="face av"><i class="coin h ico-coeur"></i><span class="medaillon">${medaillon()}<b>${i+1}</b></span><span class="retourne">Retourne-moi</span><i class="coin b ico-coeur"></i></span>
         <span class="face ar"><span class="raison-txt">${esc(r)}</span><span class="raison-n">Raison n° ${i+1}</span></span>
       </span>
     </button>`).join("");
@@ -1401,7 +1472,8 @@ function rendre(){
   site.innerHTML = `
   <section class="hero">
     <p class="pour">${noel() ? "Joyeux Noël," : occ() === "anniv" ? "Joyeux anniversaire," : "Pour toi,"}</p>
-    <h1 class="noms" aria-label="${esc(S.pour)} et ${esc(S.de)}">${lettres(S.pour,0)}<span class="et" aria-hidden="true" style="--i:${[...S.pour].length}">&amp;</span>${lettres(S.de,[...S.pour].length+1)}</h1>
+    ${nomSeul() ? `<h1 class="noms" aria-label="${esc(S.pour)}">${lettres(S.pour,0)}</h1>
+    <p class="depart">de la part ${esc(deLaPart(S.de))}</p>` : `<h1 class="noms" aria-label="${esc(S.pour)} et ${esc(S.de)}">${lettres(S.pour,0)}<span class="et" aria-hidden="true" style="--i:${[...S.pour].length}">&amp;</span>${lettres(S.de,[...S.pour].length+1)}</h1>`}
     <p class="accroche">${esc(S.accroche)}</p>
     <div class="compteur" aria-live="off">
       <div><b id="c-j">0</b><span>jours</span></div><i class="sep">·</i>
@@ -1418,11 +1490,11 @@ function rendre(){
     <p class="intro-txt" id="progression">${complete ? "Toutes les étoiles brillent… et regarde ce qu'elles dessinent." : `${nbOn} étoile${nbOn>1?"s":""} allumée${nbOn>1?"s":""} sur ${souv.length}. Touche celle qui scintille.`}</p>
     <div class="carte${complete?" complete":""}" id="carte">
       <canvas id="carte-cv" aria-hidden="true"></canvas>
-      <span class="coord" style="left:12px;top:10px">${esc(S.pour.toUpperCase())} ✦ ${esc(S.de.toUpperCase())}</span>
+      <span class="coord" style="left:12px;top:10px">${nomSeul() ? esc(S.pour.toUpperCase()) : esc(S.pour.toUpperCase()) + " ✦ " + esc(S.de.toUpperCase())}</span>
       <span class="coord" style="right:12px;top:10px">${esc(dateLisible(S.date))}</span>
       ${etoiles}
     </div>
-    <p class="nom-const"${complete?"":" hidden"}>La constellation de ${esc(S.pour)} &amp; ${esc(S.de)}</p>
+    <p class="nom-const"${complete?"":" hidden"}>${nomSeul() ? (enEtoile() ? "L'étoile de " : "La constellation de ") + esc(S.pour) : enEtoile() ? "L'étoile de " + esc(S.pour) + " &amp; " + esc(S.de) : "La constellation de " + esc(S.pour) + " &amp; " + esc(S.de)}</p>
     <article class="souvenir" id="souvenir" aria-live="polite">${souvHtml}</article>
     <div class="nav-souv"${nbOn>1?"":" hidden"}>
       <button id="s-prec">← Précédent</button>
@@ -1440,7 +1512,7 @@ function rendre(){
   <section>
     <p class="eyebrow">Un jeu</p>
     <h2>Recolle les morceaux</h2>
-    <p class="intro-txt">Notre photo s'est mélangée. À toi de la reconstituer.</p>
+    <p class="intro-txt">L'image s'est mélangée. À toi de la reconstituer.</p>
     <div id="puzzle-zone"></div>
   </section>
 
@@ -1460,24 +1532,24 @@ function rendre(){
 
   ${(S.voeu||"").trim() ? `<section>
     <p class="eyebrow">Un vœu</p>
-    <h2>Attrape l'étoile filante</h2>
-    <div class="ciel-voeu" id="ciel-voeu">${voeuAttrape ? voeuHtml() : `<button class="filante" id="filante" aria-label="Attraper l'étoile filante"><i></i></button><p class="voeu-aide">Touche-la au passage. Elle garde un vœu pour toi.</p>`}</div>
+    <h2>${tm("Attrape l'étoile filante", {noel:"Attrape le traîneau du Père Noël", anniv:"Attrape le ballon"})}</h2>
+    <div class="ciel-voeu" id="ciel-voeu">${voeuAttrape ? voeuHtml() : `<button class="filante" id="filante" style="transform:translate(-300px,-300px)" aria-label="${tm("Attraper l'étoile filante", {noel:"Attraper le traîneau", anniv:"Attraper le ballon"})}">${filanteHtml()}</button><p class="voeu-aide">${tm("Touche-la au passage. Elle garde un vœu pour toi.", {noel:"Touche-le au passage. Il apporte un vœu pour toi.", anniv:"Touche-le avant qu'il s'envole. Il porte un vœu pour toi."})}</p>`}</div>
   </section>` : ""}
 
   ${bonsValides().length >= 2 ? `<section>
     <p class="eyebrow">Des cadeaux</p>
-    <h2>La roue des bons</h2>
+    <h2>${tm("La roue des bons", {noel:"La roue des cadeaux"})}</h2>
     <div id="roue-zone"></div>
   </section>` : ""}
 
   <section>
-    <p class="eyebrow">Une lettre</p>
-    <h2>Ce que je n'ose pas toujours dire</h2>
+    <p class="eyebrow">${tm("Une lettre", {noel:"Une lettre de Noël", anniv:"Une carte"})}</p>
+    <h2>${tm("Ce que je n'ose pas toujours dire", {anniv:"Ce que je voulais te dire aujourd'hui"})}</h2>
     ${lettre}
   </section>
 
   ${(S.coffre||"").trim() ? `<section>
-    <p class="eyebrow">Sous clé</p>
+    <p class="eyebrow">${tm("Sous clé", {noel:"Sous le sapin", anniv:"Un cadeau sous clé"})}</p>
     <h2>Trouve le code</h2>
     <div id="coffre-zone"></div>
   </section>` : ""}
@@ -1487,6 +1559,18 @@ function rendre(){
     <h2>Gratte pour découvrir</h2>
     <div class="ticket" id="ticket"><span class="ticket-lab">Ticket n° ${String(new Date(S.date).getDate()||14).padStart(2,"0")}${String((new Date(S.date).getMonth()+1)||2).padStart(2,"0")} · valable pour toujours</span><p class="secret-txt">${esc(S.secret)}</p>${gratte ? "" : `<canvas id="grattage" aria-label="Zone à gratter"></canvas>`}</div>
     <p class="astuce" id="astuce-g">${gratte ? "" : "Gratte avec ton doigt."}</p>
+  </section>` : ""}
+
+  ${noel() && aventValides().length >= 2 ? `<section>
+    <p class="eyebrow">En attendant Noël</p>
+    <h2>Ton petit calendrier de l'Avent</h2>
+    <div id="avent-zone"></div>
+  </section>` : ""}
+
+  ${occ() === "anniv" ? `<section>
+    <p class="eyebrow">Ton gâteau</p>
+    <h2>Souffle tes bougies</h2>
+    <div id="gateau-zone"></div>
   </section>` : ""}
 
   <section class="question">
@@ -1499,7 +1583,7 @@ function rendre(){
     <p class="reponse" id="reponse" hidden>${esc(S.reponse)}</p>
   </section>
 
-  <footer>${esc(S.pour)} &amp; ${esc(S.de)} · ${noel() ? "joyeux Noël" : tx("pied")}</footer>`;
+  <footer>${nomSeul() ? "Pour " + esc(S.pour) + ", de la part " + esc(deLaPart(S.de)) : esc(S.pour) + " &amp; " + esc(S.de)} · ${noel() ? "joyeux Noël" : tx("pied")}</footer>`;
 
   // Étoiles
   site.querySelectorAll(".etoile").forEach(b=>b.addEventListener("click",()=>{
@@ -1595,7 +1679,7 @@ function rendre(){
   non.onpointerenter = e => { if (e.pointerType === "mouse") fuir(e); };
   non.onclick = fuir;
   tick();
-  rendrePuzzle(); rendreQuiz(); rendreRoue(); rendreCoffre();
+  rendrePuzzle(); rendreQuiz(); rendreRoue(); rendreCoffre(); rendreGateau(); rendreAvent();
   ajouterBoutonsSuite();
   appliquerChapitres();
   initGrattage();
@@ -1609,7 +1693,53 @@ let quizIdx = 0, quizErreurs = 0, quizFini = false;
 let puzzleOrdre = null, puzzleSel = -1, puzzleFini = false, puzzleImg = "", puzzleCle = "";
 let bonsGagnes = [], roueAngle = 0, roueEnCours = false;
 let coffreJour = 1, coffreMois = 1, coffreOuvert = false, coffreEssais = 0;
+
+/* ================= Jeux propres à une occasion ================= */
+let bougiesEteintes = new Set(), bougieJuste = -1, aventOuvertes = new Set();
+const NB_BOUGIES = 5;
+const AVENT_DEFAUT = ["Un chocolat chaud, préparé par moi","Une soirée film de Noël, c'est toi qui choisis","Une balade pour voir les illuminations","Un câlin sous le plaid","Un petit-déjeuner au lit","Ton vrai cadeau t'attend sous le sapin"];
+const aventValides = () => (S.avent || []).map(a => (a || "").trim()).filter(Boolean);
+function rendreGateau(){
+  const z = $("#gateau-zone"); if (!z) return;
+  const fini = bougiesEteintes.size >= NB_BOUGIES;
+  z.innerHTML = `<div class="gateau">
+      <div class="g-bougies">${Array.from({length: NB_BOUGIES}, (_, i) => `<button type="button" class="bougie${bougiesEteintes.has(i) ? " eteinte" : ""}${i === bougieJuste ? " juste" : ""}" data-b="${i}" aria-label="${bougiesEteintes.has(i) ? "Bougie éteinte" : "Bougie allumée, touche pour la souffler"}"><span class="flamme"></span><span class="fumee"></span><span class="cire"></span></button>`).join("")}</div>
+      <div class="g-etage haut"></div><div class="g-etage bas"></div><div class="g-plat"></div>
+    </div>
+    <p class="astuce">${fini ? "" : "Touche chaque flamme pour la souffler."}</p>
+    <p class="encore"${fini ? "" : " hidden"}>Fais un vœu, ${esc(S.pour)}.</p>`;
+  bougieJuste = -1;
+  z.querySelectorAll(".bougie").forEach(b => b.addEventListener("click", () => {
+    const i = +b.dataset.b; if (bougiesEteintes.has(i)) return;
+    bougiesEteintes.add(i); bougieJuste = i;
+    const r = b.getBoundingClientRect();
+    eclat(r.left + r.width/2, r.top + 14, 10, true, false);
+    try { navigator.vibrate && navigator.vibrate(20); } catch(e){}
+    const dernier = bougiesEteintes.size >= NB_BOUGIES;
+    rendreGateau();
+    if (dernier){ const g = z.getBoundingClientRect(); eclat(g.left + g.width/2, g.top + g.height*.4, 40, false, true); pluieDeCoeurs(.8); try { navigator.vibrate && navigator.vibrate([60,80,60]); } catch(e){} }
+  }));
+}
+function rendreAvent(){
+  const z = $("#avent-zone"); if (!z) return;
+  const A = aventValides(), fini = A.length > 0 && A.every((_, i) => aventOuvertes.has(i));
+  z.innerHTML = `<div class="avent">${A.map((a, i) => aventOuvertes.has(i)
+      ? `<div class="case-a ouverte" data-n="${i+1}"><span class="txt">${esc(a)}</span></div>`
+      : `<button type="button" class="case-a" data-a="${i}" aria-label="Case ${i+1}, touche pour l'ouvrir"><span class="num">${i+1}</span></button>`).join("")}</div>
+    <p class="astuce">${fini ? "" : "Ouvre les cases une par une."}</p>
+    <p class="encore"${fini ? "" : " hidden"}>Joyeux Noël, ${esc(S.pour)}.</p>`;
+  z.querySelectorAll("button.case-a").forEach(b => b.addEventListener("click", () => {
+    const i = +b.dataset.a, r = b.getBoundingClientRect();
+    aventOuvertes.add(i);
+    eclat(r.left + r.width/2, r.top + r.height/2, 16, false, false);
+    try { navigator.vibrate && navigator.vibrate(20); } catch(e){}
+    const dernier = A.every((_, k) => aventOuvertes.has(k));
+    rendreAvent();
+    if (dernier) pluieDeCoeurs(.6);
+  }));
+}
 function reinitJeux(){
+  bougiesEteintes = new Set(); aventOuvertes = new Set();
   quizIdx = 0; quizErreurs = 0; quizFini = false;
   puzzleOrdre = null; puzzleSel = -1; puzzleFini = false;
   bonsGagnes = []; roueAngle = 0; roueEnCours = false;
@@ -1620,12 +1750,67 @@ const bonsValides = () => (S.bons || []).map(b => (b || "").trim()).filter(Boole
 function centre(el){ const r = el.getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height/2]; }
 
 /* ----- Puzzle photo ----- */
+
+/* Image du puzzle quand le client n'a pas mis de photo : une scène par thème */
+function scenePuzzle(g, W, m){
+  const disque = (x, y, r, c) => { g.fillStyle = c; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); };
+  const etoile5 = (x, y, R, c) => { g.fillStyle = c; g.beginPath(); for (let k=0;k<10;k++){ const a = -Math.PI/2 + k*Math.PI/5, d = k % 2 ? R*.45 : R; k ? g.lineTo(x + Math.cos(a)*d, y + Math.sin(a)*d) : g.moveTo(x + Math.cos(a)*d, y + Math.sin(a)*d); } g.closePath(); g.fill(); };
+  const perso = (x, h, jupe) => { g.fillStyle = "#1a0518"; g.beginPath(); g.arc(x, 600-h, 17, 0, 6.283); g.fill(); g.beginPath(); if (jupe){ g.moveTo(x-13,620-h); g.lineTo(x+13,620-h); g.lineTo(x+30,668); g.lineTo(x-30,668); } else { g.moveTo(x-16,620-h); g.lineTo(x+16,620-h); g.lineTo(x+14,668); g.lineTo(x-14,668); } g.fill(); };
+  const initiales = nomSeul() ? (S.pour || "").charAt(0) : (S.pour || "").charAt(0) + " & " + (S.de || "").charAt(0);
+  const ciel = g.createLinearGradient(0,0,0,W);
+  if (m === "noel"){
+    ciel.addColorStop(0,"#071a2b"); ciel.addColorStop(.6,"#12405a"); ciel.addColorStop(1,"#2a6a7a"); g.fillStyle = ciel; g.fillRect(0,0,W,W);
+    for (let i=0;i<110;i++) { g.globalAlpha = .35 + (i%5)/8; disque((i*197)%W, (i*113)%560, 1 + (i%4)*.9, "#fff"); }
+    g.globalAlpha = 1; disque(590, 120, 46, "#fff6d8"); disque(572, 108, 40, "#0b2740");
+    g.fillStyle = "#eef6fb"; g.beginPath(); g.moveTo(0,600); g.bezierCurveTo(180,540,420,640,720,570); g.lineTo(720,720); g.lineTo(0,720); g.fill();
+    g.fillStyle = "#5a3418"; g.fillRect(338,560,44,60);
+    [[360,150,150,150],[360,250,200,160],[360,360,250,200]].forEach(([x,y,l,h], k) => { g.fillStyle = ["#1f7a4d","#1a6a42","#155a38"][k]; g.beginPath(); g.moveTo(x, y); g.lineTo(x + l/2 + 40, y + h); g.lineTo(x - l/2 - 40, y + h); g.closePath(); g.fill(); });
+    g.strokeStyle = "#f2c66d"; g.lineWidth = 5; g.beginPath(); g.moveTo(300,300); g.quadraticCurveTo(360,340,430,290); g.moveTo(260,420); g.quadraticCurveTo(360,470,470,410); g.moveTo(230,530); g.quadraticCurveTo(360,585,500,520); g.stroke();
+    [[330,260,"#e23b4a"],[395,255,"#f2c66d"],[300,380,"#f2c66d"],[365,400,"#e23b4a"],[430,375,"#6ec6ff"],[270,500,"#e23b4a"],[345,520,"#6ec6ff"],[420,505,"#f2c66d"],[480,495,"#e23b4a"]].forEach(([x,y,c]) => disque(x, y, 15, c));
+    g.save(); g.shadowColor = "#ffe9a8"; g.shadowBlur = 40; etoile5(360, 140, 46, "#ffd95e"); g.restore();
+    [[120,585,90,70,"#e23b4a","#f2c66d"],[215,605,70,52,"#2f9d6a","#fff"],[530,590,96,74,"#6ec6ff","#e23b4a"],[630,615,64,48,"#f2c66d","#e23b4a"]].forEach(([x,y,l,h,c,r]) => { g.fillStyle = c; g.fillRect(x-l/2, y, l, h); g.fillStyle = r; g.fillRect(x-6, y, 12, h); g.fillRect(x-l/2, y+h*.4, l, 10); g.beginPath(); g.arc(x-12, y-6, 11, 0, 6.283); g.arc(x+12, y-6, 11, 0, 6.283); g.fill(); });
+  } else if (m === "anniv"){
+    ciel.addColorStop(0,"#3a1257"); ciel.addColorStop(.5,"#c0356b"); ciel.addColorStop(1,"#ffb86b"); g.fillStyle = ciel; g.fillRect(0,0,W,W);
+    for (let i=0;i<90;i++){ g.save(); g.translate((i*211)%W, (i*127)%640); g.rotate(i*.7); g.globalAlpha = .9; g.fillStyle = ["#ffd447","#6ec6ff","#7be0a3","#fff","#ff8fab"][i%5]; g.fillRect(-9,-4,18,8); g.restore(); }
+    g.globalAlpha = 1;
+    [[120,190,"#ff5a7a"],[230,110,"#ffd447"],[510,130,"#6ec6ff"],[615,220,"#7be0a3"],[60,330,"#6ec6ff"],[665,60,"#ff8fab"]].forEach(([x,y,c]) => { g.strokeStyle = "rgba(255,255,255,.7)"; g.lineWidth = 3; g.beginPath(); g.moveTo(x, y+62); g.quadraticCurveTo(x-18, y+130, x+6, y+200); g.stroke(); g.fillStyle = c; g.beginPath(); g.ellipse(x, y, 50, 62, 0, 0, 6.283); g.fill(); g.fillStyle = "rgba(255,255,255,.35)"; g.beginPath(); g.ellipse(x-18, y-22, 11, 18, -.4, 0, 6.283); g.fill(); });
+    g.fillStyle = "#f2c66d"; g.fillRect(170,640,380,16);
+    g.fillStyle = "#ff8fab"; g.fillRect(200,520,320,120); g.fillStyle = "#ff5a7a"; g.fillRect(250,420,220,100);
+    g.fillStyle = "#fff6ea"; for (let x=200;x<520;x+=40){ g.beginPath(); g.arc(x+20, 520, 20, 0, Math.PI); g.fill(); } for (let x=250;x<470;x+=44){ g.beginPath(); g.arc(x+22, 420, 22, 0, Math.PI); g.fill(); }
+    [290,360,430].forEach(x => { g.fillStyle = "#fff"; g.fillRect(x-6,360,12,60); g.save(); g.shadowColor = "#ffb23e"; g.shadowBlur = 26; g.fillStyle = "#ffd447"; g.beginPath(); g.ellipse(x, 344, 10, 17, 0, 0, 6.283); g.fill(); g.restore(); });
+    g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "italic 60px Georgia, 'Times New Roman', serif"; g.fillText(initiales, 360, 580);
+  } else if (m === "famille"){
+    ciel.addColorStop(0,"#2b1055"); ciel.addColorStop(.4,"#b0306f"); ciel.addColorStop(.7,"#ff8f6b"); ciel.addColorStop(1,"#ffd9a0"); g.fillStyle = ciel; g.fillRect(0,0,W,W);
+    for (let i=0;i<60;i++){ g.globalAlpha = .35 + (i%5)/8; disque((i*197)%W, (i*89)%280, .8 + (i%4)*.5, "#fff"); }
+    g.globalAlpha = 1; disque(590, 150, 54, "#fff1b8");
+    g.fillStyle = "#33092c"; g.beginPath(); g.moveTo(0,640); g.bezierCurveTo(200,590,460,670,720,610); g.lineTo(720,720); g.lineTo(0,720); g.fill();
+    g.fillStyle = "#2a0a2e"; g.fillRect(380,440,260,200); g.beginPath(); g.moveTo(350,450); g.lineTo(510,320); g.lineTo(670,450); g.closePath(); g.fill(); g.fillRect(590,340,34,80);
+    g.save(); g.shadowColor = "#ffd27a"; g.shadowBlur = 30; g.fillStyle = "#ffd27a"; g.fillRect(420,490,70,70); g.fillRect(540,490,70,70); g.restore(); g.fillStyle = "#2a0a2e"; g.fillRect(453,490,4,70); g.fillRect(420,523,70,4); g.fillRect(573,490,4,70); g.fillRect(540,523,70,4);
+    [[607,300,26],[632,250,36],[668,190,50]].forEach(([x,y,t]) => { g.globalAlpha = .9; g.fillStyle = "#ffd6e0"; g.beginPath(); cheminCoeur(g, x, y, t); g.fill(); }); g.globalAlpha = 1;
+    perso(170, 96, true); perso(240, 54, false);
+    g.strokeStyle = "#1a0518"; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(192,565); g.lineTo(224,588); g.stroke();
+    g.save(); g.shadowColor = "rgba(255,120,160,.9)"; g.shadowBlur = 40; g.fillStyle = "#ff4d7d"; g.beginPath(); cheminCoeur(g, 210, 220, 240); g.fill(); g.restore();
+    g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "italic 78px Georgia, 'Times New Roman', serif"; g.fillText(initiales, 210, 208);
+  } else {
+    ciel.addColorStop(0,"#120f3a"); ciel.addColorStop(.55,"#4a2a8a"); ciel.addColorStop(1,"#ff8fab"); g.fillStyle = ciel; g.fillRect(0,0,W,W);
+    for (let i=0;i<120;i++){ g.globalAlpha = .35 + (i%5)/8; disque((i*197)%W, (i*113)%520, .8 + (i%4)*.6, "#fff"); }
+    g.globalAlpha = 1;
+    g.fillStyle = "#1c1040"; g.beginPath(); g.moveTo(0,620); g.bezierCurveTo(220,540,470,660,720,580); g.lineTo(720,720); g.lineTo(0,720); g.fill();
+    perso(300, 92, false); perso(380, 92, false);
+    g.strokeStyle = "#1a0518"; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(316,545); g.lineTo(340,528); g.lineTo(364,545); g.stroke();
+    g.save(); g.shadowColor = "#ffe9a8"; g.shadowBlur = 50; etoile5(360, 250, 170, "#ffd95e"); g.restore();
+    g.fillStyle = "#3a1257"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "italic 70px Georgia, 'Times New Roman', serif"; g.fillText(initiales, 360, 262);
+    [[110,120,34],[610,110,44],[90,380,24],[640,360,30],[200,60,20],[530,470,22]].forEach(([x,y,t]) => etoile5(x, y, t, "#fff6d8"));
+  }
+  g.globalAlpha = 1; g.textAlign = "center"; g.textBaseline = "middle";
+}
 function imagePuzzle(){
   const p = (S.photos || []).find(x => x.src);
   if (p) return p.src;
-  const cle = (S.pour || "") + "&" + (S.de || "") + "|" + S.date;
+  const cle = (S.pour || "") + "&" + (S.de || "") + "|" + S.date + "|" + motif();
   if (!puzzleImg || puzzleCle !== cle){
     const c = document.createElement("canvas"); c.width = c.height = 720; const g = c.getContext("2d"), W = 720;
+    if (motif() !== "couple") scenePuzzle(g, W, motif()); else {
     // ciel de coucher de soleil
     const ciel = g.createLinearGradient(0,0,0,W);
     ciel.addColorStop(0,"#2b1055"); ciel.addColorStop(.38,"#b0306f"); ciel.addColorStop(.62,"#ff6f7d"); ciel.addColorStop(.8,"#ffb37a"); ciel.addColorStop(1,"#ffd9a0");
@@ -1651,9 +1836,10 @@ function imagePuzzle(){
     g.fillText((S.pour || "").charAt(0) + " & " + (S.de || "").charAt(0), 250, 215);
     // petits cœurs qui s'envolent
     [[470,150,46,"#ffd6e0"],[560,90,30,"#fff"],[620,200,58,"#ff8fab"],[410,70,24,"#ff8fab"],[660,330,34,"#fff"],[90,90,34,"#ffb3c6"],[60,400,26,"#ffd6e0"]].forEach(([x,y,t,col]) => { g.globalAlpha = .9; g.fillStyle = col; g.beginPath(); cheminCoeur(g,x,y,t); g.fill(); });
+    }
     // bandeau avec la date
     g.globalAlpha = 1; g.fillStyle = "rgba(26,5,24,.55)"; g.fillRect(0,676,W,44);
-    g.fillStyle = "#ffe4ec"; g.font = "600 22px Georgia, serif"; g.fillText((S.pour || "") + " & " + (S.de || "") + "  ·  " + dateLisible(S.date), W/2, 699);
+    g.fillStyle = "#ffe4ec"; g.font = "600 22px Georgia, serif"; g.fillText(nomsTitre() + "  ·  " + (noel() ? "Joyeux Noël" : occ() === "anniv" ? "Joyeux anniversaire" : dateLisible(S.date)), W/2, 699);
     puzzleImg = c.toDataURL("image/jpeg", .88); puzzleCle = cle;
   }
   return puzzleImg;
@@ -1671,7 +1857,7 @@ function rendrePuzzle(victoire){
       <p class="puzzle-leg">${esc(S.pour)} &amp; ${esc(S.de)}</p>
     </div>
     <p class="astuce" id="puzzle-msg">${puzzleFini ? "" : `Touche deux morceaux pour les échanger. ${bons} sur 9 bien placé${bons > 1 ? "s" : ""}.`}</p>
-    <p class="encore"${puzzleFini ? "" : " hidden"}>${tx("puzzleFin")}</p>`;
+    <p class="encore"${puzzleFini ? "" : " hidden"}>${noel() ? "Tout est en place pour Noël." : tx("puzzleFin")}</p>`;
   $("#puzzle").style.setProperty("--img", `url("${imagePuzzle()}")`);
   if (puzzleFini) return;
   z.querySelectorAll(".tuile").forEach(t => t.onclick = () => {
@@ -1821,7 +2007,7 @@ function ajouterBoutonsSuite(){
     if (i === 0 && dernier) return;
     const d = document.createElement("div"); d.className = "suite";
     d.innerHTML = (i > 0 ? `<button class="btn-retour" type="button" aria-label="Revenir à la partie précédente"><i aria-hidden="true"></i>Retour</button>` : "")
-      + (dernier ? "" : `<button class="btn-suite" type="button">${i === 0 ? "Découvrir notre histoire" : "Continuer"} <i class="ico-coeur" aria-hidden="true"></i></button>`);
+      + (dernier ? "" : `<button class="btn-suite" type="button">${i === 0 ? (nomSeul() ? "Découvrir ta surprise" : "Découvrir notre histoire") : "Continuer"} <i class="ico-coeur" aria-hidden="true"></i></button>`);
     const s2 = d.querySelector(".btn-suite"); if (s2) s2.onclick = e => allerAu(i+1, e);
     const r = d.querySelector(".btn-retour"); if (r) r.onclick = e => allerAu(i-1, e);
     sec.appendChild(d);
@@ -1864,7 +2050,7 @@ function allerAu(i, e){
 function lettres(t, depart){
   return [...String(t)].map((c,k)=>`<span class="l" aria-hidden="true" style="--i:${depart+k}">${c===" " ? "&nbsp;" : esc(c)}</span>`).join("");
 }
-function voeuHtml(){ return `<p class="voeu-txt">« ${esc(S.voeu)} »</p><small class="voeu-sig">Mon vœu pour nous</small>`; }
+function voeuHtml(){ return `<p class="voeu-txt">« ${esc(S.voeu)} »</p><small class="voeu-sig">${tm("Mon vœu pour nous", {noel:"Mon vœu de Noël", anniv:"Mon vœu pour toi", famille:"Mon vœu pour toi"})}</small>`; }
 
 /* Sections qui apparaissent au défilement */
 const io = "IntersectionObserver" in window ? new IntersectionObserver(es => {
@@ -1882,16 +2068,20 @@ function observerSections(){
 function lancerFilante(){
   const b = $("#filante"), zone = $("#ciel-voeu"); if (!b) return;
   let t0 = performance.now(), dep = null;
-  const nouvelle = () => { const W = zone.clientWidth, H = zone.clientHeight; dep = {x0:-60, y0: H*(.12+Math.random()*.35), x1: W+60, y1: H*(.45+Math.random()*.4)}; };
+  const nouvelle = () => { const W = zone.clientWidth, H = zone.clientHeight; dep = motif() === "anniv" ? {x0:-60, y0: H*(.6+Math.random()*.25), x1: W+60, y1: H*(.15+Math.random()*.25)} : motif() === "noel" ? {x0:-90, y0: H*(.25+Math.random()*.3), x1: W+90, y1: H*(.2+Math.random()*.3)} : {x0:-60, y0: H*(.12+Math.random()*.35), x1: W+60, y1: H*(.45+Math.random()*.4)}; };
   nouvelle();
   const DUR = reduit ? 99999 : 5500, PAUSE = 600;
   const f = t => {
+    // Tant que l'étape n'est pas affichée (taille nulle), rien ne part : sinon le trajet serait calculé dans le coin en haut à gauche
+    const zw = zone.clientWidth, zh = zone.clientHeight;
+    if (!zw || !zh){ b.style.opacity = 0; t0 = t; dep.w = 0; filanteRAF = requestAnimationFrame(f); return; }
+    if (dep.w !== zw || dep.h !== zh){ nouvelle(); dep.w = zw; dep.h = zh; t0 = t; }
     let e = t - t0;
-    if (e > DUR + PAUSE){ t0 = t; e = 0; nouvelle(); }
+    if (e > DUR + PAUSE){ t0 = t; e = 0; nouvelle(); dep.w = zw; dep.h = zh; }
     const k = Math.min(1, e/DUR);
     const x = reduit ? zone.clientWidth/2 : dep.x0 + (dep.x1-dep.x0)*k, y = reduit ? zone.clientHeight/2 : dep.y0 + (dep.y1-dep.y0)*k;
     const ang = Math.atan2(dep.y1-dep.y0, dep.x1-dep.x0);
-    b.style.transform = `translate(${x}px,${y}px) rotate(${ang}rad)`;
+    b.style.transform = `translate(${x}px,${y}px) rotate(${motif() === "anniv" ? 0 : ang}rad)`;
     b.style.opacity = e > DUR ? 0 : 1;
     filanteRAF = requestAnimationFrame(f);
   };
@@ -1990,7 +2180,7 @@ function grandFinal(){
   const f = $("#finale"), cv = $("#feux"), c = cv.getContext("2d");
   const j = Math.max(1, Math.floor((Date.now() - new Date(S.date).getTime())/864e5) + 1);
   $("#fin-rep").textContent = S.reponse;
-  $("#fin-noms").textContent = S.pour + " & " + S.de;
+  $("#fin-noms").textContent = nomsTitre();
   $("#fin-jour").textContent = isNaN(j) ? "" : tx("jour")(j.toLocaleString("fr-FR"));
   f.hidden = false; f.classList.remove("montre"); void f.offsetWidth; f.classList.add("montre");
   try{ navigator.vibrate && navigator.vibrate([80,60,80,60,200]); }catch(e){}
@@ -2113,6 +2303,8 @@ function dessinerCiel(t){
     cx.globalAlpha = h.a; cx.fillStyle = cols[h.c];
     if (h.s > 22){ cx.shadowColor = cols[h.c]; cx.shadowBlur = 18; }
     if (neige){ cx.shadowBlur = 0; cx.globalAlpha = Math.min(.9, h.a + .3); cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(0, 0, Math.max(1.4, h.s * .16), 0, 6.283); cx.fill(); }
+    else if (occ() === "anniv"){ const bw = h.s*.42, bh = h.s*.52; cx.strokeStyle = cols[h.c]; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(0, bh); cx.quadraticCurveTo(-bw*.5, bh + h.s*.5, bw*.2, bh + h.s); cx.stroke(); cx.beginPath(); cx.ellipse(0, 0, bw, bh, 0, 0, 6.283); cx.fill(); }
+    else if (occ() === "ami"){ const t = h.s*.5; cx.beginPath(); cx.moveTo(0,-t); cx.lineTo(t*.28,-t*.28); cx.lineTo(t,0); cx.lineTo(t*.28,t*.28); cx.lineTo(0,t); cx.lineTo(-t*.28,t*.28); cx.lineTo(-t,0); cx.lineTo(-t*.28,-t*.28); cx.closePath(); cx.fill(); }
     else { cx.beginPath(); cheminCoeur(cx, 0, 0, h.s); cx.fill(); }
     cx.restore();
   }
@@ -2140,6 +2332,7 @@ function pluieDeCoeurs(force){
   cv.width = innerWidth*r; cv.height = innerHeight*r; hx.setTransform(r,0,0,r,0,0);
   const cs = getComputedStyle(document.body);
   const couleurs = [cs.getPropertyValue("--rose").trim(), cs.getPropertyValue("--gold").trim(), "#ffffff"];
+  const mo = motif(); if (mo === "anniv") couleurs.push("#6ec6ff", "#ffd447", "#7be0a3");
   const n = Math.round((reduit ? 30 : 140) * force);
   const P = Array.from({length:n},()=>({
     x: innerWidth/2, y: innerHeight*.6,
@@ -2164,7 +2357,11 @@ function pluieDeCoeurs(force){
       p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
       hx.save(); hx.translate(p.x,p.y); hx.rotate(p.r);
       hx.globalAlpha = Math.max(0, 1 - e/4200);
-      hx.fillStyle = p.c; coeur(0,0,p.s); hx.restore();
+      hx.fillStyle = p.c;
+      if (mo === "anniv") hx.fillRect(-p.s*.6, -p.s*.28, p.s*1.2, p.s*.56);
+      else if (mo === "noel" || mo === "ami"){ const t = p.s*.75; hx.beginPath(); hx.moveTo(0,-t); hx.lineTo(t*.28,-t*.28); hx.lineTo(t,0); hx.lineTo(t*.28,t*.28); hx.lineTo(0,t); hx.lineTo(-t*.28,t*.28); hx.lineTo(-t,0); hx.lineTo(-t*.28,-t*.28); hx.closePath(); hx.fill(); }
+      else coeur(0,0,p.s);
+      hx.restore();
     }
     if (e < 4200) requestAnimationFrame(f); else hx.clearRect(0,0,innerWidth,innerHeight);
   }
@@ -2181,7 +2378,7 @@ function eclat(x, y, n, doux, coeur){
   const cols = [cs.getPropertyValue("--gold").trim(), cs.getPropertyValue("--rose").trim(), cs.getPropertyValue("--star").trim()];
   for (let i=0;i<n;i++){
     const a = Math.random()*6.283, v = doux ? Math.random()*1.2 : 1 + Math.random()*5;
-    grains.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - (doux ? .4 : 1), v: 1, t: coeur ? 5 + Math.random()*7 : 1.5 + Math.random()*3, c: cols[i%3], d: doux ? .03 : .016, h: !!coeur});
+    grains.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - (doux ? .4 : 1), v: 1, t: coeur ? 5 + Math.random()*7 : 1.5 + Math.random()*3, c: cols[i%3], d: doux ? .03 : .016, h: !!coeur && !enEtoile()});
   }
   if (!pAnim){ pAnim = true; requestAnimationFrame(animerPoussiere); }
 }
@@ -2395,7 +2592,7 @@ function construireEditeur(){
   </details>
 
   <details><summary>Roue des bons (${(S.bons||[]).length})</summary>
-    <p class="note" style="margin:0 0 10px">Des « bons pour… » sur une roue. Votre moitié a 3 lancers et gagne 3 bons au hasard. Mettez-en au moins deux, idéalement six.</p>
+    <p class="note" style="margin:0 0 10px">Des « bons pour… » sur une roue. La personne a 3 lancers et gagne 3 bons au hasard. Mettez-en au moins deux, idéalement six.</p>
     ${(S.bons||[]).map((b,i)=>`
       <div class="bloc">
         <div class="bloc-tete">Bon ${i+1}<button class="suppr" data-del="bons" data-i="${i}">Retirer</button></div>
@@ -2403,6 +2600,16 @@ function construireEditeur(){
       </div>`).join("")}
     ${(S.bons||[]).length < 10 ? `<button class="ajout" data-add="bons">+ Ajouter un bon</button>` : ""}
   </details>
+
+  ${noel() ? `<details><summary>Calendrier de l'Avent (${(S.avent||[]).length})</summary>
+    <p class="note" style="margin:0 0 10px">Des cases numérotées à ouvrir, avec une petite surprise dans chacune. Ce jeu apparaît seulement avec le thème Noël. Mettez au moins deux cases.</p>
+    ${(S.avent||[]).map((a,i)=>`
+      <div class="bloc">
+        <div class="bloc-tete">Case ${i+1}<button class="suppr" data-del="avent" data-i="${i}">Retirer</button></div>
+        <div class="champ"><label for="av-${i}">Surprise dans la case</label><input id="av-${i}" data-l="avent" data-i="${i}" value="${esc(a)}" maxlength="70"></div>
+      </div>`).join("")}
+    ${(S.avent||[]).length < 12 ? `<button class="ajout" data-add="avent">+ Ajouter une case</button>` : ""}
+  </details>` : ""}
 
   <details><summary>Cadenas secret</summary>
     <div class="champ"><label for="f-coffre">Le message caché derrière le cadenas</label><textarea id="f-coffre" data-k="coffre" rows="3" maxlength="220">${esc(S.coffre||"")}</textarea></div>
@@ -2428,7 +2635,7 @@ corps.addEventListener("input", e=>{
   if (el.dataset.k){ S[el.dataset.k] = el.value; }
   else if (el.dataset.l){
     const l = el.dataset.l, i = +el.dataset.i;
-    if (l === "raisons" || l === "bons") S[l][i] = el.value;
+    if (l === "raisons" || l === "bons" || l === "avent") S[l][i] = el.value;
     else if (l === "quiz"){ const f = el.dataset.f; if (f === "ok") S.quiz[i].ok = +el.value; else if (f[0] === "r"){ S.quiz[i].r = S.quiz[i].r || ["","",""]; S.quiz[i].r[+f[1]] = el.value; } else S.quiz[i].q = el.value; quizIdx = 0; quizFini = false; quizErreurs = 0; }
     else S[l][i][el.dataset.f] = el.value;
   } else return;
@@ -2461,7 +2668,7 @@ corps.addEventListener("change", e=>{
 corps.addEventListener("click", e=>{
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.occ){ changerOccasion(b.dataset.occ); return; }
-  if (b.dataset.amb){ S.ambiance = b.dataset.amb; construireEditeur(); rendre(); sauver(); coulE = couleurEtoile(); if (reduit) dessinerCiel(0); return; }
+  if (b.dataset.amb){ S.ambiance = b.dataset.amb; if (noel() && !(S.avent || []).length) S.avent = AVENT_DEFAUT.slice(); construireEditeur(); rendre(); sauver(); coulE = couleurEtoile(); if (reduit) dessinerCiel(0); return; }
   if (b.dataset.del){ S[b.dataset.del].splice(+b.dataset.i,1); construireEditeur(); rendre(); sauver(); return; }
   if (b.dataset.add){
     const l = b.dataset.add;
@@ -2470,6 +2677,7 @@ corps.addEventListener("click", e=>{
     if (l==="raisons") S.raisons.push("Une nouvelle raison");
     if (l==="quiz"){ S.quiz = S.quiz || []; S.quiz.push({q:"", r:["","",""], ok:0}); }
     if (l==="bons"){ S.bons = S.bons || []; S.bons.push(""); }
+    if (l==="avent"){ S.avent = S.avent || []; S.avent.push(""); }
     construireEditeur(); rendre(); sauver();
   }
 });
@@ -2498,7 +2706,7 @@ $("#modif-go").onclick = async () => {
     const rep = await rpc("ouvrir_cadeau", {p_code: code});
     if (!rep || !rep.data){ res.textContent = "Aucun site n'a été créé avec ce code. Vérifiez-le : s'il n'a pas encore servi, utilisez « Créer mon site »."; return; }
     const d = rep.data;
-    S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre","musique"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; });
+    S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre","musique"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons","avent"].forEach(k => { if (!(k in d)) S[k] = []; });
     delete S.id; brouillonCharge = true; souvActif = 0; construireEditeur(); rendre(); sauver();
     passerEnModif(code); $("#commande").hidden = true; $("#gen-lien").hidden = false; $("#etat-creation").textContent = "";
     res.textContent = "Votre site est chargé. Faites vos changements, puis cliquez sur « Enregistrer mes modifications ». Le lien restera le même.";
@@ -2584,7 +2792,7 @@ if (idCadeau){
   document.body.classList.add("cadeau");
   const o = $("#ouverture"); intro.attente();
   chargerCadeau(idCadeau)
-    .then(d => { S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre","musique"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons"].forEach(k => { if (!(k in d)) S[k] = []; }); modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
+    .then(d => { S = {...clone(EXEMPLE), ...d}; ["voeu","secret","coffre","musique"].forEach(k => { if (!(k in d)) S[k] = ""; }); ["quiz","bons","avent"].forEach(k => { if (!(k in d)) S[k] = []; }); modeCadeau = true; souvActif = 0; rendre(); coulE = couleurEtoile(); ouverture(); })
     .catch(() => {
       document.body.classList.remove("cadeau"); o.hidden = true; lancerCompte();
       toast("Ce cadeau n'est pas encore en ligne. Réessayez dans quelques minutes.");
