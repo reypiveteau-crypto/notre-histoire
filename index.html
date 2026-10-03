@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Notre Constellation</title>
-<meta name="description" content="Un site cadeau personnalisé pour votre couple : vos souvenirs, vos photos, vos mots et des jeux à découvrir. Créez-le vous-même et offrez-le avec un simple lien.">
+<meta name="description" content="Un site cadeau personnalisé pour la personne que vous aimez : vos souvenirs, vos photos, vos mots et des jeux à découvrir. Créez-le vous-même et offrez-le avec un simple lien.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Notre Constellation, le site cadeau pour votre couple">
+<meta property="og:title" content="Notre Constellation, le site cadeau à offrir à ceux que vous aimez">
 <meta property="og:description" content="Vos souvenirs, vos photos, vos mots et des jeux à découvrir. Créez-le vous-même et offrez-le avec un simple lien.">
 <meta property="og:url" content="https://reypiveteau-crypto.github.io/notre-histoire/">
 <meta property="og:image" content="https://reypiveteau-crypto.github.io/notre-histoire/apercu.jpg">
@@ -640,6 +640,22 @@ body.cadeau .infos-btn{display:none}
 .son.muet .barre{display:block}
 .son.muet .ondes{display:none}
 body.avec-son .infos-btn{right:66px}
+
+/* Thème Noël */
+body.amb-noel{
+  --ink:#0c1915; --ink-2:#13261f; --ink-3:#1d3a2e;
+  --text:#fbf3e6; --muted:#b9cbbf; --line:rgba(242,198,109,.24);
+  --rose:#e23b4a; --rouge:#b5121f; --gold:#f2c66d; --glow:rgba(226,59,74,.3);
+  --star:#fff8e6; --on-rose:#fff;
+  color-scheme:dark;
+}
+/* Choix de l'occasion */
+.occasions{display:flex;flex-wrap:wrap;gap:8px}
+.occ{border:1px solid #ddd0d5;background:#fff;color:#4a3644;border-radius:99px;padding:9px 14px;font-size:.9rem;font-weight:700}
+.occ.on{background:#b0405f;border-color:#b0405f;color:#fff}
+.infos-ex{display:flex;flex-wrap:wrap;gap:8px}
+.infos-ex button{border:1px solid var(--line);background:var(--ink-3);color:var(--text);border-radius:99px;padding:9px 14px;font-size:.88rem;font-weight:700}
+.infos-ex button:hover{border-color:var(--rose)}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -720,11 +736,17 @@ body.avec-son .infos-btn{right:66px}
       <li><b>Vous créez votre site</b><span>Prénoms, souvenirs, photos, lettre, quiz, petits jeux : vous remplissez tout vous-même et vous voyez le résultat en direct.</span></li>
       <li><b>Vous offrez le lien</b><span>Vous recevez un lien unique à envoyer par message à la personne que vous aimez.</span></li>
     </ol>
+    <div id="infos-exemples">
+      <h3>Voir un exemple</h3>
+      <div class="infos-ex"><button type="button" data-ex="couple">Couple</button><button type="button" data-ex="famille">Parent</button><button type="button" data-ex="ami">Ami·e</button><button type="button" data-ex="anniv">Anniversaire</button><button type="button" data-ex="noel">Noël</button></div>
+    </div>
     <h3>Questions fréquentes</h3>
+    <details><summary>Pour qui puis-je créer un site ?</summary><p>Pour la personne que vous voulez : votre amoureux ou amoureuse, un parent, un ami ou une amie, ou pour fêter un anniversaire. Les phrases du site s'adaptent, et un thème Noël est disponible.</p></details>
     <details><summary>Combien de temps faut-il pour le créer ?</summary><p>Comptez quelques minutes pour une version simple. Vous pouvez prendre votre temps : votre brouillon reste enregistré sur votre appareil tant que vous n'avez pas créé le site.</p></details>
     <details><summary>Le paiement est-il sécurisé ?</summary><p>Oui. Le paiement se fait sur la page de Stripe, un prestataire de paiement utilisé par des millions de boutiques. Nous ne voyons jamais votre numéro de carte.</p></details>
     <details><summary>Puis-je essayer avant d'acheter ?</summary><p>Oui. Cliquez sur « Personnaliser » : vous pouvez tout remplir et voir le résultat gratuitement. Le code sert seulement à obtenir le lien à offrir.</p></details>
     <details><summary>Puis-je modifier le site après l'avoir créé ?</summary><p>Oui. Ouvrez « Personnaliser », puis « Site déjà créé ? Le modifier » et entrez votre code. Vous corrigez, vous enregistrez, et le lien reste le même.</p></details>
+    <details><summary>Peut-on ajouter ou enlever la musique ?</summary><p>Oui. Dans « Personnaliser », rubrique « Ambiance », choisissez une musique de fond ou « Aucune musique ». La personne qui reçoit le site peut couper le son avec le bouton en haut à droite.</p></details>
     <details><summary>Qui peut voir mon site ?</summary><p>Seulement les personnes qui ont le lien. Il n'apparaît dans aucune liste publique. Attention : toute personne à qui le lien est transmis peut l'ouvrir.</p></details>
     <details><summary>Le lien reste-t-il valable longtemps ?</summary><p>Le lien n'a pas de date d'expiration : il reste accessible tant que le service existe.</p></details>
     <details><summary>J'ai perdu mon code, que faire ?</summary><p>Ouvrez « Personnaliser », puis « Code perdu ? » et indiquez l'email utilisé lors du paiement.</p></details>
@@ -854,7 +876,108 @@ const EXEMPLE = {
   reponse: "Je le savais. Je t'aime."
 };
 
+/* ================= Occasions : mêmes étapes, textes et exemples adaptés ================= */
+EXEMPLE.occasion = "couple";
+const EXEMPLES = {
+  couple: EXEMPLE,
+  famille: {
+    occasion: "famille", pour: "Maman", de: "Inès", date: "2004-06-12T08:15",
+    accroche: "Depuis le premier jour, tu es mon repère.", ambiance: "aube", musique: "boite",
+    souvenirs: [
+      {titre:"Le tout premier jour", date:"12 juin 2004", texte:"Je ne m'en souviens pas, mais toi oui. Tu dis que j'ai ouvert les yeux et que tu as su que rien ne serait plus pareil."},
+      {titre:"Les genoux écorchés", date:"Été 2010", texte:"Je tombais de vélo tous les dix mètres. Tu soufflais dessus, tu disais « même pas mal », et ça marchait vraiment."},
+      {titre:"Les crêpes du dimanche", date:"Chaque dimanche", texte:"La première était toujours ratée, et tu disais que c'était la meilleure. Je la demande encore."},
+      {titre:"Le jour du bac", date:"Juillet 2022", texte:"Tu as lu mon nom sur la liste avant moi. Tu as pleuré, puis tu as dit que tu avais une poussière dans l'œil."},
+      {titre:"Aujourd'hui", date:"Maintenant", texte:"Et ce site, pour te dire merci. Pour tout ce que tu as fait sans jamais le compter."}
+    ],
+    photos: [{src:"", legende:"Toi et moi, 2004"},{src:"", legende:"Les vacances à la mer"},{src:"", legende:"Ton sourire"},{src:"", legende:"Nous deux"}],
+    raisons: ["Tu devines que ça ne va pas avant même que je parle.","Ta façon de dire « mange un peu » pour dire « je t'aime ».","Tu as cru en moi quand moi je n'y croyais plus.","Ton rire, qu'on entend depuis l'autre bout de la maison.","Tes conseils, que je finis toujours par suivre.","Avec toi, je me sens toujours à la maison."],
+    lettre: "Maman,\n\nJe ne te le dis pas assez, alors je l'écris ici, pour que tu puisses le relire.\n\nChaque étoile que tu viens d'allumer, c'est un moment où tu as été là. Il y en a des milliers d'autres, et je ne les oublie pas.\n\nMerci pour ta patience, pour ta force, et pour tout ce que tu as donné sans rien demander.",
+    voeu: "Que tu prennes enfin du temps pour toi. Tu l'as plus que mérité.",
+    secret: "Dimanche, ne prévois rien : c'est moi qui cuisine, et tu ne touches à rien.",
+    quiz: [
+      {q:"Quel plat je te réclame à chaque fois que je rentre ?", r:["Tes crêpes","Ta soupe","Tes lasagnes"], ok:0},
+      {q:"Qu'as-tu dit en voyant mon nom sur la liste du bac ?", r:["« Je le savais »","« J'ai une poussière dans l'œil »","« On fête ça »"], ok:1},
+      {q:"De quoi je tombais tous les dix mètres ?", r:["De mes rollers","De mon vélo","De ma trottinette"], ok:1}
+    ],
+    bons: ["Un repas préparé par moi","Un après-midi rien que toi et moi","Un grand ménage sans râler","Un petit-déjeuner au lit","Une sortie de ton choix","Un câlin illimité"],
+    coffre: "Regarde dans le tiroir de l'entrée. Il y a une enveloppe à ton nom.",
+    question: "Tu sais à quel point je t'aime ?", reponse: "Maintenant, tu le sais. Merci pour tout, Maman."
+  },
+  ami: {
+    occasion: "ami", pour: "Sarah", de: "Lina", date: "2016-09-05T08:30",
+    accroche: "Des années de fous rires, et ce n'est que le début.", ambiance: "nuit", musique: "boite",
+    souvenirs: [
+      {titre:"La rentrée de sixième", date:"5 septembre 2016", texte:"Tu t'es assise à côté de moi parce qu'il ne restait que cette place. Le meilleur hasard de ma vie."},
+      {titre:"Le fou rire interdit", date:"Cours de maths, 2018", texte:"On a été séparées de table pendant un mois. Ça valait largement le coup."},
+      {titre:"Notre premier concert", date:"Juin 2021", texte:"On a chanté si fort qu'on n'avait plus de voix pendant deux jours. On ne s'est parlé que par messages."},
+      {titre:"Le coup de fil de trois heures", date:"Un soir d'hiver", texte:"Ça n'allait pas du tout. Tu n'as pas raccroché avant que j'aille mieux."},
+      {titre:"Aujourd'hui", date:"Maintenant", texte:"Et ce site, pour te dire que des amies comme toi, on n'en trouve qu'une."}
+    ],
+    photos: [{src:"", legende:"La photo de classe"},{src:"", legende:"Le concert"},{src:"", legende:"Ta tête au réveil"},{src:"", legende:"Nous deux"}],
+    raisons: ["Tu ris à mes blagues même quand elles sont nulles.","Tu me dis la vérité, même quand je n'ai pas envie de l'entendre.","Tes vocaux de sept minutes.","Tu te souviens de choses sur moi que j'avais oubliées.","Avec toi, pas besoin de faire semblant.","Tu es là, toujours, sans que j'aie à le demander."],
+    lettre: "Sarah,\n\nOn ne se dit jamais ces choses-là, alors j'ai fabriqué un ciel entier pour te les dire.\n\nChaque étoile que tu viens d'allumer, c'est un moment où j'ai eu de la chance de t'avoir. Et il en reste plein à vivre.\n\nMerci d'être mon amie. Ne change rien.",
+    voeu: "Qu'on soit encore en train de rire ensemble dans cinquante ans.",
+    secret: "Samedi, garde ta soirée. Je passe te chercher à 19h, et je ne te dis rien de plus.",
+    quiz: [
+      {q:"Pourquoi t'es-tu assise à côté de moi en sixième ?", r:["On se connaissait déjà","Il ne restait que cette place","La prof l'a décidé"], ok:1},
+      {q:"Combien de temps a-t-on été séparées de table ?", r:["Une semaine","Un mois","Toute l'année"], ok:1},
+      {q:"Après le concert, on avait perdu…", r:["Nos billets","Notre voix","Notre train"], ok:1}
+    ],
+    bons: ["Un ciné, c'est moi qui paie","Une soirée où tu choisis tout","Un trajet en voiture à n'importe quelle heure","Un goûter surprise","Un service sans poser de questions","Une soirée pyjama"],
+    coffre: "Regarde dans la poche avant de ton sac. Je l'ai glissé là pendant que tu ne regardais pas.",
+    question: "On reste amies pour la vie ?", reponse: "Évidemment. Je t'adore."
+  },
+  anniv: {
+    occasion: "anniv", pour: "Noah", de: "Camille", date: "2006-10-18T06:40",
+    accroche: "Aujourd'hui, c'est toi qu'on célèbre.", ambiance: "braise", musique: "boite",
+    souvenirs: [
+      {titre:"Le grand jour", date:"18 octobre 2006", texte:"Ce matin-là, à 6h40, le monde est devenu un peu plus drôle. Personne ne le savait encore."},
+      {titre:"Le gâteau raté", date:"Tes 10 ans", texte:"Il s'est effondré avant les bougies. Tu as dit que c'était le meilleur de ta vie, et tu en as repris deux fois."},
+      {titre:"La fête surprise", date:"Tes 16 ans", texte:"Tu avais tout deviné depuis une semaine, mais tu as quand même fait semblant d'être surpris. Très mal."},
+      {titre:"Le permis", date:"Juillet 2025", texte:"Tu nous as tous emmenés faire un tour. On a eu peur, mais on ne te l'a jamais dit. Voilà, c'est fait."},
+      {titre:"Aujourd'hui", date:"Ton anniversaire", texte:"Une année de plus, et toujours la même chance de t'avoir dans nos vies."}
+    ],
+    photos: [{src:"", legende:"Toi, tout petit"},{src:"", legende:"Le fameux gâteau"},{src:"", legende:"Ta tête de surprise"},{src:"", legende:"Nous"}],
+    raisons: ["Tu rends les gens meilleurs sans t'en rendre compte.","Ton rire, qu'on reconnaîtrait entre mille.","Tu n'oublies jamais l'anniversaire des autres.","Ta façon de danser, que personne n'ose commenter.","On peut compter sur toi, à n'importe quelle heure.","Avec toi, même un mardi devient une fête."],
+    lettre: "Noah,\n\nPour ton anniversaire, je voulais autre chose qu'une carte qu'on range dans un tiroir.\n\nChaque étoile que tu viens d'allumer, c'est un souvenir avec toi. Il y en a déjà beaucoup, et les plus beaux restent à venir.\n\nProfite de ta journée. Tu la mérites.",
+    voeu: "Que cette nouvelle année t'apporte tout ce que tu n'oses pas encore demander.",
+    secret: "Ton vrai cadeau t'attend ce soir. Indice : il ne rentre pas dans une boîte.",
+    quiz: [
+      {q:"À quelle heure es-tu né ?", r:["6h40","Midi pile","23h59"], ok:0},
+      {q:"Qu'est-il arrivé au gâteau de tes 10 ans ?", r:["Il a brûlé","Il s'est effondré","Le chien l'a mangé"], ok:1},
+      {q:"Ta fête surprise, tu l'avais devinée depuis…", r:["La veille","Une semaine","Tu n'avais rien vu"], ok:1}
+    ],
+    bons: ["Un resto de ton choix","Une journée où tu décides de tout","Une part de gâteau en plus","Un film choisi par toi, sans débat","Une grasse matinée sans reproche","Un câlin illimité"],
+    coffre: "Regarde sous ton oreiller. Et non, ce n'est pas encore le vrai cadeau.",
+    question: "Prêt à souffler tes bougies ?", reponse: "Joyeux anniversaire, Noah !"
+  }
+};
+const TXT = {
+  couple:  {nom:"Couple", ouvFinal: d => d + " t'aime.", depuis:"ensemble depuis le", labDate:"Date et heure de votre rencontre", puzzleFin:"Nous deux, c'est une évidence.", indice:"le jour et le mois de notre rencontre", noteCoffre:"le jour et le mois de votre rencontre", jour: n => "Jour " + n + " de notre histoire", pied:"pour toujours"},
+  famille: {nom:"Parent", ouvFinal: d => d + " t'aime.", depuis:"à tes côtés depuis le", labDate:"Une date qui compte pour vous deux (votre naissance, par exemple)", puzzleFin:"Toi et moi, c'est pour la vie.", indice:"le jour et le mois de la date écrite tout au début", noteCoffre:"le jour et le mois de la date choisie dans « Vous deux »", jour: n => "Jour " + n + " à tes côtés", pied:"pour toujours"},
+  ami:     {nom:"Ami·e", ouvFinal: d => d + " tient à toi.", depuis:"notre amitié dure depuis le", labDate:"Date de votre rencontre (même approximative)", puzzleFin:"Nous deux, c'est du solide.", indice:"le jour et le mois de notre rencontre", noteCoffre:"le jour et le mois de votre rencontre", jour: n => "Jour " + n + " de notre amitié", pied:"pour la vie"},
+  anniv:   {nom:"Anniversaire", ouvFinal: () => "Joyeux anniversaire !", depuis:"tu illumines le monde depuis le", labDate:"Sa date de naissance", puzzleFin:"Tout est à sa place pour ta fête.", indice:"le jour et le mois de ton anniversaire", noteCoffre:"le jour et le mois de son anniversaire", jour: n => "Jour " + n + " de ta vie", pied:"joyeux anniversaire"}
+};
+const OCCASIONS = ["couple", "famille", "ami", "anniv"];
+const occ = () => TXT[S.occasion] ? S.occasion : "couple";
+const tx = k => TXT[occ()][k];
+const noel = () => S.ambiance === "noel";
+
 let S = clone(EXEMPLE);
+try { const q = new URLSearchParams(location.search), p = q.get("pour"); if (p && EXEMPLES[p]) S = clone(EXEMPLES[p]); if (q.get("theme") === "noel") S.ambiance = "noel"; } catch(e){}
+/* L'exemple est-il encore intact ? (le client n'a rien écrit) */
+function exempleIntact(){
+  const e = EXEMPLES[occ()], cles = Object.keys(e).filter(k => k !== "musique" && k !== "ambiance").sort();
+  return JSON.stringify(cles.map(k => S[k])) === JSON.stringify(cles.map(k => e[k]));
+}
+function changerOccasion(o){
+  if (!EXEMPLES[o] || o === occ()) return;
+  if (exempleIntact()){ const m = S.musique, n = noel(); S = clone(EXEMPLES[o]); S.musique = m; if (n) S.ambiance = "noel"; toast("Exemple « " + TXT[o].nom + " » chargé. À vous de le personnaliser."); }
+  else { S.occasion = o; toast("Vos textes sont gardés. Les titres du site s'adaptent."); }
+  souvActif = 0; reinitSurprises(); construireEditeur(); rendre(); sauver(); coulE = couleurEtoile(); if (reduit) dessinerCiel(0);
+}
+
 let modeCadeau = false;
 let souvActif = 0;
 let nonEssais = 0;
@@ -968,6 +1091,11 @@ const LEGAL = { nom: "", siret: "", adresse: "", tva: "TVA non applicable, artic
   g("infos-btn").addEventListener("click", ouvrir);
   g("infos-fermer").addEventListener("click", fermer);
   g("infos-go").addEventListener("click", () => { boite.hidden = true; });
+  boite.querySelectorAll("[data-ex]").forEach(b => b.addEventListener("click", () => {
+    if (brouillonCharge){ toast("Fermez « Personnaliser » et rechargez la page pour revoir les exemples."); return; }
+    const x = b.dataset.ex; S = clone(x === "noel" ? EXEMPLE : EXEMPLES[x]); if (x === "noel") S.ambiance = "noel";
+    boite.hidden = true; souvActif = 0; coulE = couleurEtoile(); ouverture();
+  }));
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !boite.hidden) fermer(); });
 })();
 async function fonctionPaiement(corps){
@@ -1224,7 +1352,7 @@ const musique = (function(){
 document.getElementById("son").addEventListener("click", e => { e.stopPropagation(); musique.basculer(); });
 function rendre(){
   musique.sync();
-  document.body.classList.remove("amb-aube","amb-braise","amb-passion");
+  document.body.classList.remove("amb-aube","amb-braise","amb-passion","amb-noel");
   if (S.ambiance && S.ambiance !== "nuit") document.body.classList.add("amb-" + S.ambiance);
   clearInterval(tapeur); cancelAnimationFrame(filanteRAF);
 
@@ -1272,7 +1400,7 @@ function rendre(){
 
   site.innerHTML = `
   <section class="hero">
-    <p class="pour">Pour toi,</p>
+    <p class="pour">${noel() ? "Joyeux Noël," : occ() === "anniv" ? "Joyeux anniversaire," : "Pour toi,"}</p>
     <h1 class="noms" aria-label="${esc(S.pour)} et ${esc(S.de)}">${lettres(S.pour,0)}<span class="et" aria-hidden="true" style="--i:${[...S.pour].length}">&amp;</span>${lettres(S.de,[...S.pour].length+1)}</h1>
     <p class="accroche">${esc(S.accroche)}</p>
     <div class="compteur" aria-live="off">
@@ -1281,7 +1409,7 @@ function rendre(){
       <div><b id="c-m">00</b><span>minutes</span></div><i class="sep">·</i>
       <div><b id="c-s">00</b><span>secondes</span></div>
     </div>
-    <p class="depuis">ensemble depuis le <strong>${esc(dateLisible(S.date))}</strong></p>
+    <p class="depuis">${tx("depuis")} <strong>${esc(dateLisible(S.date))}</strong></p>
   </section>
 
   <section>
@@ -1371,7 +1499,7 @@ function rendre(){
     <p class="reponse" id="reponse" hidden>${esc(S.reponse)}</p>
   </section>
 
-  <footer>${esc(S.pour)} &amp; ${esc(S.de)} · pour toujours</footer>`;
+  <footer>${esc(S.pour)} &amp; ${esc(S.de)} · ${noel() ? "joyeux Noël" : tx("pied")}</footer>`;
 
   // Étoiles
   site.querySelectorAll(".etoile").forEach(b=>b.addEventListener("click",()=>{
@@ -1543,7 +1671,7 @@ function rendrePuzzle(victoire){
       <p class="puzzle-leg">${esc(S.pour)} &amp; ${esc(S.de)}</p>
     </div>
     <p class="astuce" id="puzzle-msg">${puzzleFini ? "" : `Touche deux morceaux pour les échanger. ${bons} sur 9 bien placé${bons > 1 ? "s" : ""}.`}</p>
-    <p class="encore"${puzzleFini ? "" : " hidden"}>Nous deux, c'est une évidence.</p>`;
+    <p class="encore"${puzzleFini ? "" : " hidden"}>${tx("puzzleFin")}</p>`;
   $("#puzzle").style.setProperty("--img", `url("${imagePuzzle()}")`);
   if (puzzleFini) return;
   z.querySelectorAll(".tuile").forEach(t => t.onclick = () => {
@@ -1648,7 +1776,7 @@ function rendreCoffre(){
     return;
   }
   const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
-  const indice = "Indice : le jour et le mois de notre rencontre.";
+  const indice = "Indice : " + tx("indice") + ".";
   z.innerHTML = `<div class="cadenas" id="cadenas">${CADENAS_SVG}</div>
     <div class="molettes">
       <div class="molette"><span class="molette-lab">Jour</span><button type="button" class="haut" data-c="j" data-d="1" aria-label="Jour suivant"></button><b id="mol-j">${coffreJour}</b><button type="button" class="bas" data-c="j" data-d="-1" aria-label="Jour précédent"></button></div>
@@ -1863,7 +1991,7 @@ function grandFinal(){
   const j = Math.max(1, Math.floor((Date.now() - new Date(S.date).getTime())/864e5) + 1);
   $("#fin-rep").textContent = S.reponse;
   $("#fin-noms").textContent = S.pour + " & " + S.de;
-  $("#fin-jour").textContent = isNaN(j) ? "" : "Jour " + j.toLocaleString("fr-FR") + " de notre histoire";
+  $("#fin-jour").textContent = isNaN(j) ? "" : tx("jour")(j.toLocaleString("fr-FR"));
   f.hidden = false; f.classList.remove("montre"); void f.offsetWidth; f.classList.add("montre");
   try{ navigator.vibrate && navigator.vibrate([80,60,80,60,200]); }catch(e){}
   const r = devicePixelRatio || 1, W = innerWidth, H = innerHeight;
@@ -1975,12 +2103,17 @@ function dessinerCiel(t){
   // cœurs qui montent
   const cols = [pal.rose, pal.rouge, pal.star];
   for (const h of coeursCiel){
-    if (!reduit){ h.y -= h.vy; if (h.y < -50) Object.assign(h, nouveauCoeur(W,H,false)); }
+    const neige = S.ambiance === "noel";
+    if (!reduit){
+      if (neige){ h.y += h.vy * 1.5; if (h.y > H + 50){ Object.assign(h, nouveauCoeur(W,H,false)); h.y = -40; } }
+      else { h.y -= h.vy; if (h.y < -50) Object.assign(h, nouveauCoeur(W,H,false)); }
+    }
     const x = h.x + Math.sin(t/1000*.6 + h.ph)*h.sw;
     cx.save(); cx.translate(x, h.y); cx.rotate(h.rot + Math.sin(t/1400 + h.ph)*.15);
     cx.globalAlpha = h.a; cx.fillStyle = cols[h.c];
     if (h.s > 22){ cx.shadowColor = cols[h.c]; cx.shadowBlur = 18; }
-    cx.beginPath(); cheminCoeur(cx, 0, 0, h.s); cx.fill();
+    if (neige){ cx.shadowBlur = 0; cx.globalAlpha = Math.min(.9, h.a + .3); cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(0, 0, Math.max(1.4, h.s * .16), 0, 6.283); cx.fill(); }
+    else { cx.beginPath(); cheminCoeur(cx, 0, 0, h.s); cx.fill(); }
     cx.restore();
   }
   if (!reduit){
@@ -2162,7 +2295,7 @@ const intro = (() => {
       const cs = getComputedStyle(document.body);
       coul = { star: cs.getPropertyValue("--star").trim()||"#fff", rose: cs.getPropertyValue("--rose").trim()||"#f2a79c", glow: cs.getPropertyValue("--glow").trim()||"rgba(242,167,156,.3)" };
       $("#ouv-nom").textContent = S.pour;
-      $("#ouv-final").textContent = S.de + " t'aime.";
+      $("#ouv-final").textContent = noel() ? "Joyeux Noël, " + S.pour + "." : tx("ouvFinal")(S.de);
       o.classList.remove("fin","forme","boum","tient");
       prog = 0; phase = "attente"; tient = false; dernier = 0; jauge.style.strokeDashoffset = 201;
       $("#ouv-geste").textContent = reduit ? "Touche l'écran" : ("ontouchstart" in window ? "Maintiens ton doigt" : "Maintiens le clic");
@@ -2182,18 +2315,24 @@ const AMB = [
   {id:"passion", nom:"Passion", fond:"linear-gradient(135deg,#22061a,#5a1235 55%,#ff4d7d)"},
   {id:"nuit", nom:"Nuit", fond:"linear-gradient(135deg,#120f24,#282047 60%,#f2a79c)"},
   {id:"aube", nom:"Aube", fond:"linear-gradient(135deg,#fffafb,#f0dfe6 60%,#c2456b)"},
-  {id:"braise", nom:"Braise", fond:"linear-gradient(135deg,#170a0b,#361a1c 60%,#ff8466)"}
+  {id:"braise", nom:"Braise", fond:"linear-gradient(135deg,#170a0b,#361a1c 60%,#ff8466)"},
+  {id:"noel", nom:"Noël", fond:"linear-gradient(135deg,#0c1915,#1d3a2e 55%,#e23b4a)"}
 ];
 
 function construireEditeur(){
   const ouverts = [...corps.querySelectorAll("details")].map(d=>d.open);
   corps.innerHTML = `
+  <details open><summary>Pour qui ?</summary>
+    <div class="occasions">${OCCASIONS.map(o=>`<button class="occ${occ()===o?" on":""}" data-occ="${o}" aria-pressed="${occ()===o}">${TXT[o].nom}</button>`).join("")}</div>
+    <p class="note" style="margin:8px 0 0">Les phrases du site s'adaptent à la personne. Tant que vous n'avez rien écrit, un exemple complet s'affiche pour vous inspirer.</p>
+  </details>
+
   <details open><summary>Vous deux</summary>
     <div class="duo">
       <div class="champ"><label for="f-pour">Son prénom</label><input id="f-pour" data-k="pour" value="${esc(S.pour)}" maxlength="24"></div>
       <div class="champ"><label for="f-de">Votre prénom</label><input id="f-de" data-k="de" value="${esc(S.de)}" maxlength="24"></div>
     </div>
-    <div class="champ"><label for="f-date">Date et heure de votre rencontre</label><input id="f-date" type="datetime-local" data-k="date" value="${esc(S.date)}"></div>
+    <div class="champ"><label for="f-date">${tx("labDate")}</label><input id="f-date" type="datetime-local" data-k="date" value="${esc(S.date)}"></div>
     <div class="champ"><label for="f-acc">Phrase d'accroche</label><input id="f-acc" data-k="accroche" value="${esc(S.accroche)}" maxlength="90"></div>
   </details>
 
@@ -2267,7 +2406,7 @@ function construireEditeur(){
 
   <details><summary>Cadenas secret</summary>
     <div class="champ"><label for="f-coffre">Le message caché derrière le cadenas</label><textarea id="f-coffre" data-k="coffre" rows="3" maxlength="220">${esc(S.coffre||"")}</textarea></div>
-    <p class="note" style="margin:0">Le code est le jour et le mois de votre rencontre : <strong>${codeCoffre().slice(0,2)} / ${codeCoffre().slice(2)}</strong>. Il change si vous modifiez la date. Laissez le message vide pour retirer ce jeu.</p>
+    <p class="note" style="margin:0">Le code est ${tx("noteCoffre")} : <strong>${codeCoffre().slice(0,2)} / ${codeCoffre().slice(2)}</strong>. Il change si vous modifiez la date. Laissez le message vide pour retirer ce jeu.</p>
   </details>
 
   <details><summary>Lettre</summary>
@@ -2321,6 +2460,7 @@ corps.addEventListener("change", e=>{
 
 corps.addEventListener("click", e=>{
   const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.occ){ changerOccasion(b.dataset.occ); return; }
   if (b.dataset.amb){ S.ambiance = b.dataset.amb; construireEditeur(); rendre(); sauver(); coulE = couleurEtoile(); if (reduit) dessinerCiel(0); return; }
   if (b.dataset.del){ S[b.dataset.del].splice(+b.dataset.i,1); construireEditeur(); rendre(); sauver(); return; }
   if (b.dataset.add){
@@ -2341,7 +2481,7 @@ $("#voir-ouv").onclick = ()=>{ ed.classList.remove("ouvert"); ouverture(); };
 let confirmeReinit = false;
 $("#reinit").onclick = ()=>{
   if (!confirmeReinit){ confirmeReinit = true; $("#reinit-conf").hidden = false; setTimeout(()=>{ confirmeReinit=false; $("#reinit-conf").hidden = true; }, 4000); return; }
-  S = {pour:"Prénom", de:"Moi", date:new Date().toISOString().slice(0,16), accroche:"", ambiance:"nuit", musique:"", souvenirs:[{titre:"Notre premier souvenir",date:"",texte:""}], photos:[{src:"",legende:""}], raisons:["Une raison"], lettre:"", question:"", reponse:"", voeu:"", secret:"", quiz:[], bons:[], coffre:""};
+  S = {pour:"Prénom", de:"Moi", date:new Date().toISOString().slice(0,16), accroche:"", ambiance:"nuit", musique:"", occasion:occ(), souvenirs:[{titre:"Notre premier souvenir",date:"",texte:""}], photos:[{src:"",legende:""}], raisons:["Une raison"], lettre:"", question:"", reponse:"", voeu:"", secret:"", quiz:[], bons:[], coffre:""};
   confirmeReinit = false; $("#reinit-conf").hidden = true;
   souvActif = 0; construireEditeur(); rendre(); sauver(); toast("Site vidé. À vous d'écrire.");
 };
