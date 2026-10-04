@@ -691,6 +691,16 @@ body.motif-etoile{--coeur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
 .filante svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);overflow:visible;filter:drop-shadow(0 0 10px var(--gold))}
 .filante .traineau{width:150px;height:64px;color:var(--gold)}
 .filante .ballon{width:54px;height:96px}
+
+/* Téléphone, vitrine : « Offrir ce site » et « Personnaliser » côte à côte, pour ne plus cacher « Continuer » */
+@media (max-width:480px){
+  .acheter{right:114px;padding:10px 12px;min-height:76px;align-content:center}
+  .acheter .lancement{font-size:.66rem}
+  .ouvrir-edit,body.avec-avis .ouvrir-edit{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:90px;min-height:76px;padding:8px 4px;border-radius:18px;font-size:.72rem;letter-spacing:0}
+  body:not(.cadeau).chapitres #site > section.actif{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+  body.avec-avis:not(.cadeau).chapitres #site > section.actif{padding-bottom:calc(230px + env(safe-area-inset-bottom,0px))}
+}
+body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -985,7 +995,7 @@ const EXEMPLES = {
     ],
     bons: ["Un resto de ton choix","Une journée où tu décides de tout","Une part de gâteau en plus","Un film choisi par toi, sans débat","Une grasse matinée sans reproche","Un câlin illimité"],
     coffre: "Regarde sous ton oreiller. Et non, ce n'est pas encore le vrai cadeau.",
-    question: "Prêt à souffler tes bougies ?", reponse: "Joyeux anniversaire, Noah !"
+    question: "Alors, on fête ça ensemble ?", reponse: "Joyeux anniversaire, Noah !"
   }
 };
 const TXT = {
@@ -1235,7 +1245,9 @@ function positions(n){
 const COEUR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 const COEUR_MEDAILLON = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rose)" stop-opacity=".35"/><stop offset="1" stop-color="var(--rouge)" stop-opacity=".12"/></linearGradient></defs><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gm)"/><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" class="contour"/></svg>';
 
+const COEUR_D_REF = "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
 const ETOILE_D = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
+const cadenas = () => enEtoile() ? CADENAS_SVG.split(COEUR_D_REF).join(ETOILE_D) : CADENAS_SVG;
 const icone = () => enEtoile() ? COEUR_SVG.split("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z").join(ETOILE_D) : COEUR_SVG;
 const medaillon = () => enEtoile() ? COEUR_MEDAILLON.split("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z").join(ETOILE_D) : COEUR_MEDAILLON;
 function filanteHtml(){
@@ -1526,7 +1538,7 @@ function rendre(){
 
   ${quizValide().length ? `<section>
     <p class="eyebrow">Le quiz</p>
-    <h2>Tu me connais vraiment ?</h2>
+    <h2>${tm("Tu me connais vraiment ?", {anniv:"Tu te souviens de tout ?"})}</h2>
     <div id="quiz-zone"></div>
   </section>` : ""}
 
@@ -1883,7 +1895,7 @@ function rendreQuiz(){
   if (quizIdx >= Q.length) quizFini = true;
   const jauge = `<div class="quiz-jauge" aria-hidden="true">${Q.map((_,i)=>`<i class="ico-coeur${i < quizIdx || quizFini ? " plein" : ""}"></i>`).join("")}</div>`;
   if (quizFini){
-    z.innerHTML = jauge + `<div class="quiz-fin"><p class="quiz-score">${quizErreurs === 0 ? "Sans une seule erreur" : "Tu as tout trouvé"}</p><p class="encore">${quizErreurs === 0 ? "Tu me connais par cœur." : "Tu me connais presque par cœur."}</p></div>`;
+    z.innerHTML = jauge + `<div class="quiz-fin"><p class="quiz-score">${quizErreurs === 0 ? "Sans une seule erreur" : "Tu as tout trouvé"}</p><p class="encore">${occ() === "anniv" ? (quizErreurs === 0 ? "Tu n'as rien oublié." : "Tu n'as presque rien oublié.") : (quizErreurs === 0 ? "Tu me connais par cœur." : "Tu me connais presque par cœur.")}</p></div>`;
     return;
   }
   const q = Q[quizIdx];
@@ -1958,17 +1970,17 @@ function codeCoffre(){ const d = new Date(S.date); if (isNaN(d)) return "1402"; 
 function rendreCoffre(){
   const z = $("#coffre-zone"); if (!z) return;
   if (coffreOuvert){
-    z.innerHTML = `<div class="cadenas ouvert">${CADENAS_SVG}</div><div class="coffre-tresor"><span class="bon-lab">Ce que je gardais sous clé</span><p>${esc(S.coffre)}</p></div>`;
+    z.innerHTML = `<div class="cadenas ouvert">${cadenas()}</div><div class="coffre-tresor"><span class="bon-lab">Ce que je gardais sous clé</span><p>${esc(S.coffre)}</p></div>`;
     return;
   }
   const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
   const indice = "Indice : " + tx("indice") + ".";
-  z.innerHTML = `<div class="cadenas" id="cadenas">${CADENAS_SVG}</div>
+  z.innerHTML = `<div class="cadenas" id="cadenas">${cadenas()}</div>
     <div class="molettes">
       <div class="molette"><span class="molette-lab">Jour</span><button type="button" class="haut" data-c="j" data-d="1" aria-label="Jour suivant"></button><b id="mol-j">${coffreJour}</b><button type="button" class="bas" data-c="j" data-d="-1" aria-label="Jour précédent"></button></div>
       <div class="molette large"><span class="molette-lab">Mois</span><button type="button" class="haut" data-c="m" data-d="1" aria-label="Mois suivant"></button><b id="mol-m">${MOIS[coffreMois-1]}</b><button type="button" class="bas" data-c="m" data-d="-1" aria-label="Mois précédent"></button></div>
     </div>
-    <p class="astuce" id="coffre-msg">${coffreEssais >= 20 ? indice : "Le code ? La date où tout a commencé."}</p>`;
+    <p class="astuce" id="coffre-msg">${coffreEssais >= 20 ? indice : tm("Le code ? La date où tout a commencé.", {anniv:"Le code ? Une date que tu connais par cœur.", famille:"Le code ? Une date qui compte pour nous deux."})}</p>`;
   const d0 = new Date(S.date), bonJour = isNaN(d0) ? 14 : d0.getDate(), bonMois = isNaN(d0) ? 2 : d0.getMonth() + 1;
   let ouvert = false, minuterie = null, repet = null;
   const tourner = (c, d) => {
@@ -2492,6 +2504,7 @@ const intro = (() => {
       const cs = getComputedStyle(document.body);
       coul = { star: cs.getPropertyValue("--star").trim()||"#fff", rose: cs.getPropertyValue("--rose").trim()||"#f2a79c", glow: cs.getPropertyValue("--glow").trim()||"rgba(242,167,156,.3)" };
       $("#ouv-nom").textContent = S.pour;
+      $("#ouv-phrase").textContent = tm("Quelqu'un a caché quelque chose pour toi dans les étoiles.", {noel:"Quelqu'un a glissé une surprise pour toi sous les étoiles de Noël.", anniv:"Quelqu'un a préparé une surprise pour ton anniversaire."});
       $("#ouv-final").textContent = noel() ? "Joyeux Noël, " + S.pour + "." : tx("ouvFinal")(S.de);
       o.classList.remove("fin","forme","boum","tient");
       prog = 0; phase = "attente"; tient = false; dernier = 0; jauge.style.strokeDashoffset = 201;
@@ -2526,7 +2539,7 @@ function construireEditeur(){
 
   <details open><summary>Vous deux</summary>
     <div class="duo">
-      <div class="champ"><label for="f-pour">Son prénom</label><input id="f-pour" data-k="pour" value="${esc(S.pour)}" maxlength="24"></div>
+      <div class="champ"><label for="f-pour">${occ() === "famille" ? "Son prénom, ou « Maman », « Papa »…" : "Son prénom"}</label><input id="f-pour" data-k="pour" value="${esc(S.pour)}" maxlength="24"></div>
       <div class="champ"><label for="f-de">Votre prénom</label><input id="f-de" data-k="de" value="${esc(S.de)}" maxlength="24"></div>
     </div>
     <div class="champ"><label for="f-date">${tx("labDate")}</label><input id="f-date" type="datetime-local" data-k="date" value="${esc(S.date)}"></div>
@@ -2575,12 +2588,12 @@ function construireEditeur(){
   </details>
 
   <details><summary>Vœu et secret</summary>
-    <div class="champ"><label for="f-voeu">Le vœu caché dans l'étoile filante</label><textarea id="f-voeu" data-k="voeu" rows="3" maxlength="200">${esc(S.voeu)}</textarea></div>
+    <div class="champ"><label for="f-voeu">${tm("Le vœu caché dans l'étoile filante", {noel:"Le vœu apporté par le traîneau du Père Noël", anniv:"Le vœu accroché au ballon"})}</label><textarea id="f-voeu" data-k="voeu" rows="3" maxlength="200">${esc(S.voeu)}</textarea></div>
     <div class="champ"><label for="f-secret">Le message secret à gratter</label><textarea id="f-secret" data-k="secret" rows="3" maxlength="160">${esc(S.secret)}</textarea></div>
   </details>
 
   <details><summary>Quiz (${(S.quiz||[]).length})</summary>
-    <p class="note" style="margin:0 0 10px">Posez des questions sur votre histoire. Trois réponses possibles, une seule bonne.</p>
+    <p class="note" style="margin:0 0 10px">Posez des questions sur vos souvenirs. Trois réponses possibles, une seule bonne.</p>
     ${(S.quiz||[]).map((q,i)=>`
       <div class="bloc">
         <div class="bloc-tete">Question ${i+1}<button class="suppr" data-del="quiz" data-i="${i}">Retirer</button></div>
