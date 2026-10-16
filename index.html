@@ -725,6 +725,27 @@ body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 
 .fin-cta a{display:inline-block;border-radius:99px;padding:14px 26px;font-weight:700;text-decoration:none;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);box-shadow:0 10px 30px var(--glow)}
 body.cadeau .fin-cta{display:none}
 body:not(.cadeau) .fin-btns button:first-child{background:var(--ink-2);color:var(--text);border-color:var(--line)}
+
+/* Page des avis clients */
+#avis-page{position:fixed;inset:0;z-index:52;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px;background:var(--ink);overflow-y:auto}
+#avis-page[hidden]{display:none}
+.etoiles{color:var(--gold);letter-spacing:2px;font-family:var(--f-body)}
+.avis-resume{text-align:center;margin:0 0 20px;color:var(--muted);line-height:1.6}
+.avis-resume b{font-family:var(--f-display);font-size:2.2rem;color:var(--text);font-weight:400}
+.avis-liste{display:grid;gap:10px;margin:0 0 6px}
+.avis-item{background:var(--ink-3);border-radius:14px;padding:12px 14px}
+.avis-item p{margin:6px 0 6px;font-family:var(--f-display);font-style:italic;font-size:1.02rem;line-height:1.4;color:var(--text)}
+.avis-item small{color:var(--muted);font-size:.76rem}
+.avis-vide{text-align:center;color:var(--muted);font-size:.92rem;margin:0}
+.avis-form2 label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin:12px 0 6px}
+.avis-form2 input,.avis-form2 textarea{width:100%;font:inherit;font-size:1rem;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--ink);color:var(--text)}
+.avis-form2 textarea{resize:vertical;min-height:84px}
+.choix-note{display:flex;gap:2px}
+.choix-note button{background:none;border:0;font-size:2rem;line-height:1;color:var(--line);padding:2px 4px;cursor:pointer;font-family:var(--f-body)}
+.choix-note button.on{color:var(--gold)}
+.lien-avis{background:none;border:0;padding:0;font:inherit;color:var(--gold);text-decoration:underline;cursor:pointer}
+.avis{cursor:pointer}
+.avis small b{color:var(--gold);font-weight:700}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -836,6 +857,8 @@ body:not(.cadeau) .fin-btns button:first-child{background:var(--ink-2);color:var
     <details><summary>Qui peut voir mon site ?</summary><p>Seulement les personnes qui ont le lien. Il n'apparaît dans aucune liste publique. Attention : toute personne à qui le lien est transmis peut l'ouvrir.</p></details>
     <details><summary>Le lien reste-t-il valable longtemps ?</summary><p>Le lien n'a pas de date d'expiration : il reste accessible tant que le service existe.</p></details>
     <details><summary>J'ai perdu mon code, que faire ?</summary><p>Ouvrez « Personnaliser », puis « Code perdu ? » et indiquez l'email utilisé lors du paiement.</p></details>
+    <h3>Avis clients</h3>
+    <p class="infos-contact"><button type="button" class="lien-avis" id="infos-avis">Lire les avis et en laisser un</button></p>
     <h3>Une question, un souci ?</h3>
     <p class="infos-contact">Écrivez-nous : <a id="infos-mail" href="mailto:contact.notreconstellation@gmail.com">contact.notreconstellation@gmail.com</a></p>
     <div id="infos-legal" hidden>
@@ -864,7 +887,30 @@ body:not(.cadeau) .fin-btns button:first-child{background:var(--ink-2);color:var
     <a class="infos-go" id="infos-go" target="_blank" rel="noopener">Offrir ce site</a>
   </div>
 </div>
-<div class="avis" id="avis" hidden aria-live="polite"><i class="ico-coeur" aria-hidden="true"></i><div><p id="avis-txt"></p><span id="avis-qui"></span></div><small>Avis de clients ayant acheté le site</small></div>
+<div id="avis-page" hidden role="dialog" aria-label="Avis clients">
+  <div class="infos-carte">
+    <button class="infos-fermer" id="avis-fermer" type="button" aria-label="Fermer">×</button>
+    <p class="eyebrow" style="text-align:center">Notre Constellation</p>
+    <h2>Avis clients</h2>
+    <div class="avis-resume" id="avis-resume"></div>
+    <div class="avis-liste" id="avis-liste"></div>
+    <h3>Vous avez offert un site ? Donnez votre avis</h3>
+    <div class="avis-form2">
+      <label id="a-note-lab">Votre note</label>
+      <div class="choix-note" id="a-note" role="radiogroup" aria-labelledby="a-note-lab"><button type="button" data-n="1" role="radio" aria-label="1 sur 5">★</button><button type="button" data-n="2" role="radio" aria-label="2 sur 5">★</button><button type="button" data-n="3" role="radio" aria-label="3 sur 5">★</button><button type="button" data-n="4" role="radio" aria-label="4 sur 5">★</button><button type="button" data-n="5" role="radio" aria-label="5 sur 5">★</button></div>
+      <label for="a-code">Le code d'accès reçu après votre paiement</label>
+      <input id="a-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <label for="a-prenom">Votre prénom</label>
+      <input id="a-prenom" maxlength="30" autocomplete="given-name">
+      <label for="a-texte">Votre avis : sa réaction, ce que vous en avez pensé</label>
+      <textarea id="a-texte" rows="3" maxlength="300"></textarea>
+      <button class="infos-go" id="a-envoyer" type="button">Publier mon avis</button>
+      <p class="infos-contact" id="a-etat" role="status" style="margin-top:10px"></p>
+      <p class="infos-contact" style="font-size:.8rem;margin-top:12px">Avis vérifiés : seuls les clients peuvent en laisser un, avec le code reçu après leur paiement. Tous les avis sont publiés, sans tri, du plus récent au plus ancien.</p>
+    </div>
+  </div>
+</div>
+<div class="avis" id="avis" hidden aria-live="polite"><i class="ico-coeur" aria-hidden="true"></i><div><p id="avis-txt"></p><span id="avis-qui"></span></div><small>Avis vérifiés de clients · <b>tout voir ›</b></small></div>
 <a class="acheter" id="acheter" href="https://buy.stripe.com/bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
 <button class="ouvrir-edit" id="btn-edit" aria-controls="editeur">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -903,11 +949,8 @@ body:not(.cadeau) .fin-btns button:first-child{background:var(--ink-2);color:var
     </div>
     <details class="avis-form" id="avis-form">
       <summary>Déjà client ? Laisser un avis</summary>
-      <div class="champ"><label for="a-code">Votre code d'accès</label><input id="a-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
-      <div class="champ"><label for="a-prenom">Votre prénom</label><input id="a-prenom" maxlength="30"></div>
-      <div class="champ"><label for="a-texte">Votre avis (sa réaction, ce que vous en avez pensé)</label><textarea id="a-texte" rows="2" maxlength="200"></textarea></div>
-      <button class="principal" id="a-envoyer">Envoyer mon avis</button>
-      <p class="note" id="a-etat" role="status"></p>
+      <p class="note" style="margin:0 0 8px">Donnez une note et racontez sa réaction : votre avis aide les autres à se décider.</p>
+      <button class="principal" id="a-ouvrir" type="button">Laisser un avis</button>
     </details>
     <p class="note" id="reinit-conf" hidden>Cliquez encore sur « Tout effacer » pour confirmer.</p>
   </div>
@@ -1110,7 +1153,7 @@ async function lancerAvis(){
   try {
     if (supaOK()){
       const recus = await rpc("lire_avis", {});
-      if (Array.isArray(recus)) liste = recus.map(a => ({texte: a.texte, prenom: a.prenom, date: a.date ? new Date(a.date).toLocaleDateString("fr-FR", {month:"long", year:"numeric"}) : ""})).concat(liste);
+      if (Array.isArray(recus)) liste = recus.map(a => ({texte: a.texte, prenom: a.prenom, note: a.note, date: a.date ? new Date(a.date).toLocaleDateString("fr-FR", {month:"long", year:"numeric"}) : ""})).concat(liste);
     }
   } catch(e){}
   if (!liste.length || document.body.classList.contains("cadeau")) return;
@@ -1119,7 +1162,7 @@ async function lancerAvis(){
     const a = liste[k % liste.length]; k++;
     bloc.classList.remove("change"); void bloc.offsetWidth; bloc.classList.add("change");
     document.getElementById("avis-txt").textContent = "« " + a.texte + " »";
-    document.getElementById("avis-qui").textContent = a.prenom + (a.date ? " · " + a.date : "");
+    document.getElementById("avis-qui").textContent = (a.note ? etoilesTxt(a.note) + "  " : "") + a.prenom + (a.date ? " · " + a.date : "");
   };
   bloc.hidden = false; document.body.classList.add("avec-avis"); montrer();
   if (liste.length > 1) setInterval(montrer, 5500);
@@ -1194,6 +1237,39 @@ const LEGAL = { nom: "Suthanna Seang", siret: "935 079 442 00023", adresse: "16 
   }));
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !boite.hidden) fermer(); });
 })();
+
+/* ================= Page des avis clients ================= */
+let noteAvis = 5;
+const etoilesTxt = n => n ? "★".repeat(n) + "☆".repeat(5 - n) : "";
+function majNote(){ document.querySelectorAll("#a-note button").forEach(b => { const on = +b.dataset.n <= noteAvis; b.classList.toggle("on", on); b.setAttribute("aria-checked", String(+b.dataset.n === noteAvis)); }); }
+async function chargerTousAvis(){
+  const liste = $("#avis-liste"), resume = $("#avis-resume");
+  liste.innerHTML = '<p class="avis-vide">Chargement des avis…</p>'; resume.innerHTML = "";
+  if (!supaOK()){ liste.innerHTML = '<p class="avis-vide">Les avis ne sont pas encore activés.</p>'; return; }
+  try {
+    const [L, R] = await Promise.all([rpc("lire_avis", {p_limite: 200}), rpc("resume_avis", {})]);
+    const avis = Array.isArray(L) ? L : [];
+    if (!avis.length){
+      resume.innerHTML = "";
+      liste.innerHTML = '<p class="avis-vide">Pas encore d\'avis : les premiers clients arrivent. Vous avez offert un site ? Soyez le premier à donner le vôtre.</p>';
+      return;
+    }
+    const n = (R && R.nombre) || avis.length, moy = R && R.moyenne != null ? Number(R.moyenne) : null;
+    resume.innerHTML = (moy != null ? `<b>${moy.toLocaleString("fr-FR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}</b> sur 5 <span class="etoiles">${etoilesTxt(Math.round(moy))}</span><br>` : "") + `${n} avis vérifié${n > 1 ? "s" : ""}`;
+    liste.innerHTML = avis.map(a => `<div class="avis-item">${a.note ? `<span class="etoiles" aria-label="${a.note} sur 5">${etoilesTxt(a.note)}</span>` : ""}<p>« ${esc(a.texte)} »</p><small>${esc(a.prenom)}${a.date ? " · " + esc(new Date(a.date).toLocaleDateString("fr-FR", {day: "numeric", month: "long", year: "numeric"})) : ""}</small></div>`).join("");
+  } catch(e){ liste.innerHTML = '<p class="avis-vide">Les avis n\'ont pas pu être chargés. Vérifiez votre connexion.</p>'; }
+}
+function ouvrirAvis(){ const inf = $("#infos"); if (inf) inf.hidden = true; $("#avis-page").hidden = false; $("#avis-page").scrollTop = 0; majNote(); chargerTousAvis(); $("#avis-fermer").focus(); }
+function brancherAvis(){
+$("#avis-fermer").addEventListener("click", () => { $("#avis-page").hidden = true; });
+document.querySelectorAll("#a-note button").forEach(b => b.addEventListener("click", () => { noteAvis = +b.dataset.n; majNote(); }));
+$("#avis").addEventListener("click", ouvrirAvis);
+$("#avis").setAttribute("role", "button"); $("#avis").setAttribute("tabindex", "0");
+$("#avis").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); ouvrirAvis(); } });
+$("#infos-avis").addEventListener("click", ouvrirAvis);
+$("#a-ouvrir").addEventListener("click", ouvrirAvis);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#avis-page").hidden) $("#avis-page").hidden = true; });
+}
 async function fonctionPaiement(corps){
   const r = await fetch(`${SUPA_URL}/functions/v1/code-paiement`, {method:"POST", headers: entetes({"Content-Type":"application/json"}), body: JSON.stringify(corps)});
   let j = null; try { j = await r.json(); } catch(e){}
@@ -2820,13 +2896,13 @@ $("#a-envoyer").onclick = async () => {
   if (texte.length < 5){ etat.textContent = "Écrivez au moins quelques mots."; $("#a-texte").focus(); return; }
   btn.disabled = true; etat.textContent = "Envoi…";
   try {
-    await rpc("laisser_avis", {p_code: code, p_prenom: prenom, p_texte: texte});
-    etat.textContent = "Merci ! Votre avis est en ligne sur la page d'accueil.";
-    $("#a-texte").value = ""; pluieDeCoeurs(.3);
+    await rpc("laisser_avis", {p_code: code, p_prenom: prenom, p_texte: texte, p_note: noteAvis});
+    etat.textContent = "Merci ! Votre avis est publié.";
+    $("#a-texte").value = ""; pluieDeCoeurs(.3); chargerTousAvis();
   } catch(e){
     const m = String(e && e.message || "");
     etat.textContent = /code_invalide/.test(m) ? "Ce code n'a pas encore servi à créer un site. Seuls les clients peuvent laisser un avis."
-      : /avis_invalide/.test(m) ? "Votre avis doit faire entre 5 et 200 caractères."
+      : /avis_invalide/.test(m) ? "Votre avis doit faire entre 5 et 300 caractères."
       : "L'envoi n'a pas marché. Vérifiez votre connexion et réessayez.";
   } finally { btn.disabled = false; }
 };
@@ -2860,6 +2936,7 @@ rendre();
 construireEditeur();
 majLancement();
 lancerAvis();
+brancherAvis();
 const sessionPaiement = new URLSearchParams(location.search).get("session_id");
 
 /* ================= Accueil de la vitrine ================= */
