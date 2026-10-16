@@ -701,6 +701,30 @@ body.motif-etoile{--coeur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
   body.avec-avis:not(.cadeau).chapitres #site > section.actif{padding-bottom:calc(230px + env(safe-area-inset-bottom,0px))}
 }
 body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+
+/* Écran d'accueil de la vitrine : ce que c'est, pour qui, et un essai avec ses propres prénoms */
+#accueil{position:fixed;inset:0;z-index:51;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px;background:var(--ink);overflow-y:auto}
+#accueil[hidden]{display:none}
+.acc-carte{width:min(480px,100%);margin:auto 0;text-align:center;background:var(--ink-2);border:1px solid var(--line);border-radius:22px;padding:30px 22px 24px;box-shadow:0 0 80px -20px var(--glow)}
+.acc-titre{font-size:clamp(1.7rem,6.6vw,2.3rem);line-height:1.12;margin:.35em 0 .5em}
+.acc-txt{color:var(--muted);font-size:.98rem;line-height:1.5;margin:0 0 22px}
+.acc-sous{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 10px}
+.acc-occ{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px}
+.acc-occ button{border:1px solid var(--line);background:var(--ink-3);color:var(--text);border-radius:99px;padding:9px 14px;font-size:.88rem;font-weight:700}
+.acc-occ button.on{background:linear-gradient(135deg,var(--rose),var(--rouge));border-color:transparent;color:var(--on-rose)}
+.acc-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;text-align:left}
+.acc-duo label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin:0 0 5px 4px}
+.acc-duo input{width:100%;font:inherit;font-size:1rem;padding:12px 12px;border-radius:12px;border:1px solid var(--line);background:var(--ink);color:var(--text)}
+.acc-duo input::placeholder{color:var(--muted);opacity:.7}
+.acc-go{width:100%;border:0;border-radius:99px;padding:16px;font-weight:700;font-size:1.05rem;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);box-shadow:0 10px 30px var(--glow)}
+.acc-note{font-size:.8rem;color:var(--muted);margin:14px 0 0;line-height:1.5}
+.acc-note b{color:var(--gold)}
+/* Fin de la démo : proposer d'offrir le même */
+.fin-cta{margin:26px 0 0;animation:monte 1s 2s ease-out both}
+.fin-cta span{display:block;color:var(--muted);font-size:.92rem;margin-bottom:10px}
+.fin-cta a{display:inline-block;border-radius:99px;padding:14px 26px;font-weight:700;text-decoration:none;background:linear-gradient(135deg,var(--rose),var(--rouge));color:var(--on-rose);box-shadow:0 10px 30px var(--glow)}
+body.cadeau .fin-cta{display:none}
+body:not(.cadeau) .fin-btns button:first-child{background:var(--ink-2);color:var(--text);border-color:var(--line)}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -724,6 +748,7 @@ body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 
     <p class="fin-rep" id="fin-rep"></p>
     <p class="fin-noms" id="fin-noms"></p>
     <p class="fin-jour" id="fin-jour"></p>
+    <p class="fin-cta"><span>Envie d'offrir la même surprise à quelqu'un ?</span><a id="fin-offrir" target="_blank" rel="noopener">Offrir ce site</a></p>
     <div class="fin-btns"><button id="fin-revoir">Revivre depuis le début</button><button id="fin-fermer">Fermer</button></div>
   </div>
 </div>
@@ -750,6 +775,22 @@ body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 
 </button>
 <button class="rejouer" id="rejouer" aria-label="Rejouer l'ouverture">✦ Rejouer l'ouverture</button>
 
+<div id="accueil" hidden role="dialog" aria-label="Bienvenue sur Notre Constellation">
+  <div class="acc-carte">
+    <p class="eyebrow">Notre Constellation</p>
+    <h1 class="acc-titre">Un site entier, rien que pour la personne que vous aimez.</h1>
+    <p class="acc-txt">Vos souvenirs, vos photos, une lettre et des petits jeux à découvrir. Vous le créez vous-même en quelques minutes, puis vous l'offrez avec un simple lien.</p>
+    <p class="acc-sous">Pour qui ?</p>
+    <div class="acc-occ" id="acc-occ"><button type="button" data-acc="couple">Mon couple</button><button type="button" data-acc="famille">Un parent</button><button type="button" data-acc="ami">Un·e ami·e</button><button type="button" data-acc="anniv">Un anniversaire</button><button type="button" data-acc="noel">Noël</button></div>
+    <p class="acc-sous">Essayez avec vos prénoms</p>
+    <div class="acc-duo">
+      <div><label for="acc-pour">Son prénom</label><input id="acc-pour" maxlength="24" autocomplete="off" placeholder="Léa"></div>
+      <div><label for="acc-de">Votre prénom</label><input id="acc-de" maxlength="24" autocomplete="off" placeholder="Yanis"></div>
+    </div>
+    <button class="acc-go" id="acc-go" type="button">Voir la démo</button>
+    <p class="acc-note">Voici ce que la personne recevra. <b id="acc-prix">14,99 €</b> pour l'offrir : l'essai est gratuit, vous ne payez que pour obtenir le lien.</p>
+  </div>
+</div>
 <div id="merci" hidden role="dialog" aria-label="Votre code d'accès">
   <div class="merci-carte">
     <p class="eyebrow" id="merci-etape">Paiement reçu</p>
@@ -824,7 +865,7 @@ body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 
   </div>
 </div>
 <div class="avis" id="avis" hidden aria-live="polite"><i class="ico-coeur" aria-hidden="true"></i><div><p id="avis-txt"></p><span id="avis-qui"></span></div><small>Avis de clients ayant acheté le site</small></div>
-<a class="acheter" id="acheter" href="https://buy.stripe.com/test_bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
+<a class="acheter" id="acheter" href="https://buy.stripe.com/bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener">Offrir<span class="ce-site"> ce site</span> <b id="prix-btn">14,99 €</b><small class="lancement" id="compte-lancement">L'offre de lancement se termine bientôt</small></a>
 <button class="ouvrir-edit" id="btn-edit" aria-controls="editeur">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
   Personnaliser
@@ -835,7 +876,7 @@ body.motif-etoile .points i{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 
   <div class="ed-corps" id="ed-corps"></div>
   <div class="ed-pied" id="ed-pied">
     <h3 class="ed-pied-titre">Créer et offrir votre site</h3>
-    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/test_bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (l'offre de lancement se termine bientôt, le prix passera à 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
+    <p class="note" style="margin:0 0 4px">Pas encore de code ? <a href="https://buy.stripe.com/bJe9ATf9t3A03sB3Y23oA00" target="_blank" rel="noopener" style="color:#b0405f;font-weight:700">Offrir ce site pour <span id="prix-note">14,99 €</span></a><span id="note-lancement"> (l'offre de lancement se termine bientôt, le prix passera à 24,99 €)</span>. Vous recevrez votre code juste après le paiement.</p>
     <div class="champ" style="margin:0"><label for="f-code">Votre code d'accès (reçu après paiement)</label><input id="f-code" placeholder="COEUR-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
     <button class="principal" id="gen-lien">Créer mon site</button>
     <details class="avis-form" id="perdu-form">
@@ -1021,12 +1062,14 @@ let S = clone(EXEMPLE);
 try { const q = new URLSearchParams(location.search), p = q.get("pour"); if (p && EXEMPLES[p]) S = clone(EXEMPLES[p]); if (q.get("theme") === "noel"){ S.ambiance = "noel"; S.avent = ["Un chocolat chaud, préparé par moi","Une soirée film de Noël, c'est toi qui choisis","Une balade pour voir les illuminations","Un câlin sous le plaid","Un petit-déjeuner au lit","Ton vrai cadeau t'attend sous le sapin"]; } } catch(e){}
 /* L'exemple est-il encore intact ? (le client n'a rien écrit) */
 function exempleIntact(){
-  const e = EXEMPLES[occ()], cles = Object.keys(e).filter(k => k !== "musique" && k !== "ambiance" && k !== "avent").sort();
-  return JSON.stringify(cles.map(k => S[k])) === JSON.stringify(cles.map(k => e[k]));
+  const e = EXEMPLES[occ()], cles = Object.keys(e).filter(k => !["musique","ambiance","avent","pour","de"].includes(k)).sort();
+  // les textes d'exemple où le prénom a été remplacé à l'accueil comptent comme intacts
+  const brut = v => typeof v === "string" ? v.split(S.pour).join(e.pour) : v;
+  return JSON.stringify(cles.map(k => brut(S[k]))) === JSON.stringify(cles.map(k => e[k]));
 }
 function changerOccasion(o){
   if (!EXEMPLES[o] || o === occ()) return;
-  if (exempleIntact()){ const m = S.musique, n = noel(); const av = S.avent; S = clone(EXEMPLES[o]); S.musique = m; if (n){ S.ambiance = "noel"; S.avent = av; } toast("Exemple « " + TXT[o].nom + " » chargé. À vous de le personnaliser."); }
+  if (exempleIntact()){ const m = S.musique, n = noel(); const av = S.avent, e0 = EXEMPLES[occ()], np = S.pour !== e0.pour ? S.pour : "", nd = S.de !== e0.de ? S.de : ""; S = clone(EXEMPLES[o]); S.musique = m; if (np){ const ex = EXEMPLES[o].pour; ["lettre","reponse","question","accroche"].forEach(k => { if (typeof S[k] === "string") S[k] = S[k].split(ex).join(np); }); S.pour = np; } if (nd) S.de = nd; if (n){ S.ambiance = "noel"; S.avent = av; } toast("Exemple « " + TXT[o].nom + " » chargé. À vous de le personnaliser."); }
   else { S.occasion = o; toast("Vos textes sont gardés. Les titres du site s'adaptent."); }
   souvActif = 0; reinitSurprises(); construireEditeur(); rendre(); sauver(); coulE = couleurEtoile(); if (reduit) dessinerCiel(0);
 }
@@ -1083,7 +1126,7 @@ async function lancerAvis(){
 }
 
 /* ================= Prix de lancement (date réelle de fin) ================= */
-const FIN_LANCEMENT = new Date("2026-10-31T23:59:00+01:00");
+const FIN_LANCEMENT = new Date("2026-11-30T23:59:00+01:00");
 const PRIX_LANCEMENT = "14,99 €", PRIX_NORMAL = "24,99 €";
 function majLancement(){
   const reste = FIN_LANCEMENT - Date.now();
@@ -2191,6 +2234,7 @@ function direOui(){
 function grandFinal(){
   const f = $("#finale"), cv = $("#feux"), c = cv.getContext("2d");
   const j = Math.max(1, Math.floor((Date.now() - new Date(S.date).getTime())/864e5) + 1);
+  $("#fin-offrir").href = $("#acheter").href; $("#fin-offrir").textContent = "Offrir ce site · " + $("#prix-btn").textContent;
   $("#fin-rep").textContent = S.reponse;
   $("#fin-noms").textContent = nomsTitre();
   $("#fin-jour").textContent = isNaN(j) ? "" : tx("jour")(j.toLocaleString("fr-FR"));
@@ -2817,7 +2861,29 @@ construireEditeur();
 majLancement();
 lancerAvis();
 const sessionPaiement = new URLSearchParams(location.search).get("session_id");
-if (!idCadeau){ if (sessionPaiement) afficherMerci(sessionPaiement); else ouverture(); }
+
+/* ================= Accueil de la vitrine ================= */
+let accChoix = "couple";
+try { const q = new URLSearchParams(location.search); if (q.get("theme") === "noel") accChoix = "noel"; else if (EXEMPLES[q.get("pour")]) accChoix = q.get("pour"); } catch(e){}
+function majAccueil(){
+  document.querySelectorAll("#acc-occ button").forEach(b => { const on = b.dataset.acc === accChoix; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+  const e = accChoix === "noel" ? EXEMPLE : EXEMPLES[accChoix];
+  $("#acc-pour").placeholder = e.pour; $("#acc-de").placeholder = e.de;
+}
+function afficherAccueil(){ majAccueil(); $("#acc-prix").textContent = $("#prix-btn").textContent; $("#accueil").hidden = false; }
+document.querySelectorAll("#acc-occ button").forEach(b => b.addEventListener("click", () => { accChoix = b.dataset.acc; majAccueil(); }));
+const prenomPropre = v => { v = (v || "").trim().replace(/\s+/g, " "); return v ? v.charAt(0).toUpperCase() + v.slice(1) : ""; };
+function lancerDemo(){
+  const e = accChoix === "noel" ? EXEMPLE : EXEMPLES[accChoix];
+  S = clone(e); if (accChoix === "noel"){ S.ambiance = "noel"; S.avent = AVENT_DEFAUT.slice(); }
+  const p = prenomPropre($("#acc-pour").value), d = prenomPropre($("#acc-de").value);
+  if (p){ ["lettre","reponse","question","accroche"].forEach(k => { if (typeof S[k] === "string") S[k] = S[k].split(e.pour).join(p); }); S.pour = p; }
+  if (d) S.de = d;
+  $("#accueil").hidden = true; souvActif = 0; coulE = couleurEtoile(); ouverture();
+}
+$("#acc-go").addEventListener("click", lancerDemo);
+["acc-pour","acc-de"].forEach(id => $("#" + id).addEventListener("keydown", ev => { if (ev.key === "Enter") lancerDemo(); }));
+if (!idCadeau){ if (sessionPaiement) afficherMerci(sessionPaiement); else { ouverture(); afficherAccueil(); } }
 try { const ca = localStorage.getItem("constellation-code-achete"); if (ca && !$("#f-code").value) $("#f-code").value = ca; } catch(e){}
 $("#perdu-go").onclick = async () => {
   const res = $("#perdu-res"), mail = $("#perdu-email").value.trim();
