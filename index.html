@@ -746,6 +746,29 @@ body:not(.cadeau) .fin-btns button:first-child{background:var(--ink-2);color:var
 .lien-avis{background:none;border:0;padding:0;font:inherit;color:var(--gold);text-decoration:underline;cursor:pointer}
 .avis{cursor:pointer}
 .avis small b{color:var(--gold);font-weight:700}
+
+/* Thème Aurore : nuit très noire, étoiles et aurores boréales */
+body.amb-aurore{
+  --ink:#04060b; --ink-2:#0a111c; --ink-3:#121d2c;
+  --text:#eaf6ff; --muted:#9fb3c8; --line:rgba(120,230,200,.2);
+  --rose:#5ef2c1; --rouge:#2bb3c9; --gold:#a8f0ff; --glow:rgba(94,242,193,.26);
+  --star:#ffffff; --on-rose:#03140f;
+  color-scheme:dark;
+}
+body.amb-aurore .fond{overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% 115%,#0a1f2b,transparent 70%),#04060b}
+body.amb-aurore .fond::before{content:"";position:absolute;inset:-25% -15% 35% -15%;
+  background:
+    radial-gradient(ellipse 38% 22% at 22% 38%,rgba(70,255,170,.62),transparent 70%),
+    radial-gradient(ellipse 30% 18% at 48% 26%,rgba(90,255,200,.45),transparent 70%),
+    radial-gradient(ellipse 34% 20% at 66% 30%,rgba(80,200,255,.42),transparent 70%),
+    radial-gradient(ellipse 42% 22% at 84% 42%,rgba(150,95,255,.42),transparent 70%);
+  filter:blur(26px);mix-blend-mode:screen;transform-origin:50% 0;animation:aurore 18s ease-in-out infinite alternate}
+body.amb-aurore .fond::after{background:radial-gradient(ellipse at 50% 40%,transparent 50%,rgba(0,0,0,.55))}
+@keyframes aurore{
+  0%{transform:translateX(-5%) skewX(-10deg) scaleY(1);opacity:.85}
+  35%{transform:translateX(2%) skewX(6deg) scaleY(1.2);opacity:1}
+  70%{transform:translateX(5%) skewX(-4deg) scaleY(.92);opacity:.75}
+  100%{transform:translateX(-2%) skewX(8deg) scaleY(1.1);opacity:.95}}
 </style>
 <style>body{margin:0}</style>
 </head>
@@ -1102,7 +1125,8 @@ const deLaPart = n => { n = (n || "").trim(); return (/^[aeiouhàâäéèêëî�
 const nomsTitre = () => nomSeul() ? S.pour : S.pour + " & " + S.de;
 
 let S = clone(EXEMPLE);
-try { const q = new URLSearchParams(location.search), p = q.get("pour"); if (p && EXEMPLES[p]) S = clone(EXEMPLES[p]); if (q.get("theme") === "noel"){ S.ambiance = "noel"; S.avent = ["Un chocolat chaud, préparé par moi","Une soirée film de Noël, c'est toi qui choisis","Une balade pour voir les illuminations","Un câlin sous le plaid","Un petit-déjeuner au lit","Ton vrai cadeau t'attend sous le sapin"]; } } catch(e){}
+try { const q = new URLSearchParams(location.search), p = q.get("pour"); if (p && EXEMPLES[p]) S = clone(EXEMPLES[p]); if (q.get("theme") === "aurore") S.ambiance = "aurore";
+  if (q.get("theme") === "noel"){ S.ambiance = "noel"; S.avent = ["Un chocolat chaud, préparé par moi","Une soirée film de Noël, c'est toi qui choisis","Une balade pour voir les illuminations","Un câlin sous le plaid","Un petit-déjeuner au lit","Ton vrai cadeau t'attend sous le sapin"]; } } catch(e){}
 /* L'exemple est-il encore intact ? (le client n'a rien écrit) */
 function exempleIntact(){
   const e = EXEMPLES[occ()], cles = Object.keys(e).filter(k => !["musique","ambiance","avent","pour","de"].includes(k)).sort();
@@ -1552,7 +1576,7 @@ const musique = (function(){
 document.getElementById("son").addEventListener("click", e => { e.stopPropagation(); musique.basculer(); });
 function rendre(){
   musique.sync();
-  document.body.classList.remove("amb-aube","amb-braise","amb-passion","amb-noel");
+  document.body.classList.remove("amb-aube","amb-braise","amb-passion","amb-noel","amb-aurore");
   document.body.classList.toggle("motif-etoile", enEtoile());
   if (S.ambiance && S.ambiance !== "nuit") document.body.classList.add("amb-" + S.ambiance);
   clearInterval(tapeur); cancelAnimationFrame(filanteRAF);
@@ -2424,7 +2448,7 @@ function dessinerCiel(t){
   }
   // cœurs qui montent
   const cols = [pal.rose, pal.rouge, pal.star];
-  for (const h of coeursCiel){
+  for (const h of (S.ambiance === "aurore" ? [] : coeursCiel)){
     const neige = S.ambiance === "noel";
     if (!reduit){
       if (neige){ h.y += h.vy * 1.5; if (h.y > H + 50){ Object.assign(h, nouveauCoeur(W,H,false)); h.y = -40; } }
@@ -2646,7 +2670,8 @@ const AMB = [
   {id:"nuit", nom:"Nuit", fond:"linear-gradient(135deg,#120f24,#282047 60%,#f2a79c)"},
   {id:"aube", nom:"Aube", fond:"linear-gradient(135deg,#fffafb,#f0dfe6 60%,#c2456b)"},
   {id:"braise", nom:"Braise", fond:"linear-gradient(135deg,#170a0b,#361a1c 60%,#ff8466)"},
-  {id:"noel", nom:"Noël", fond:"linear-gradient(135deg,#0c1915,#1d3a2e 55%,#e23b4a)"}
+  {id:"noel", nom:"Noël", fond:"linear-gradient(135deg,#0c1915,#1d3a2e 55%,#e23b4a)"},
+  {id:"aurore", nom:"Aurore", fond:"linear-gradient(135deg,#04060b 20%,#0b3a33 60%,#5ef2c1 85%,#8a63ff)"}
 ];
 
 function construireEditeur(){
