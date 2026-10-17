@@ -769,6 +769,12 @@ body.amb-aurore .fond::after{background:radial-gradient(ellipse at 50% 40%,trans
   35%{transform:translateX(2%) skewX(6deg) scaleY(1.2);opacity:1}
   70%{transform:translateX(5%) skewX(-4deg) scaleY(.92);opacity:.75}
   100%{transform:translateX(-2%) skewX(8deg) scaleY(1.1);opacity:.95}}
+
+/* Ordinateur : quand « Personnaliser » est ouvert, le site se range dans la partie visible pour voir les changements en direct */
+@media (min-width:861px){
+  body:has(#editeur.ouvert) #site{margin-right:440px;transition:margin .45s}
+  body:has(#editeur.ouvert) .noms{font-size:clamp(3.4rem,calc((100vw - 440px)*.13),9.5rem)}
+}
 </style>
 <style>body{margin:0}</style>
 </head>
